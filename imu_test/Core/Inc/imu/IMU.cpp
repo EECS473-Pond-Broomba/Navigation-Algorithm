@@ -8,11 +8,17 @@
 #include <imu/IMU.h>
 
 IMU::IMU() {
-	// TODO Auto-generated constructor stub
-
+	// Auto-generated constructor stub
 }
 
 IMU::~IMU() {
-	// TODO Auto-generated destructor stub
+	// Auto-generated destructor stub
 }
 
+double IMU::getOrientation(Axes axis);
+
+double IMU::getAngVel(Axes axis);
+
+double IMU::getTotalAcceleration(Axes axis);
+
+double IMU::getLinearAcceleration(Axes axis);
