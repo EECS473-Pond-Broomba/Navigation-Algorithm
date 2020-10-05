@@ -3,9 +3,9 @@
  *
  *  Created on: Oct 3, 2020
  *      Author: cy
- * 
+ *
  * Part of the code is from Adafruit's library. Licensing information below
- /*!
+ *!
  *  @file Adafruit_BNO055.h
  *
  *  This is a library for the BNO055 orientation sensor
@@ -30,8 +30,10 @@
 #define INC_IMU_IMU_H_
 
 #include <stdint.h>
+#include "stm32f4xx_hal.h"
 
 #define IMU_I2C_ADDR 0x28
+#define TIMEOUT 0xFFFFFFFF
 
 class IMU {
 public:
@@ -193,19 +195,19 @@ public:
 	};
 
 	enum IMU_MODE {
-		CONFIGMODE = 0x00,
-		ACCONLY = 0x01,
-		MAGONLY = 0x02,
-		GYROONLY = 0x03,
-		ACCMAG = 0x04,
-		ACCGYRO = 0x05,
-		MAGGYRO = 0x06,
-		AMG = 0x07,
-		IMU = 0x08,
-		COMPASS = 0x09,
-		M4G = 0x0A,
-		NDOF_FMC_OFF = 0x0B,
-		NDOF = 0x0C
+		OPR_MODE_CONFIGMODE = 0x00,
+		OPR_MODE_ACCONLY = 0x01,
+		OPR_MODE_MAGONLY = 0x02,
+		OPR_MODE_GYROONLY = 0x03,
+		OPR_MODE_ACCMAG = 0x04,
+		OPR_MODE_ACCGYRO = 0x05,
+		OPR_MODE_MAGGYRO = 0x06,
+		OPR_MODE_AMG = 0x07,
+		OPR_MODE_IMU = 0x08,
+		OPR_MODE_COMPASS = 0x09,
+		OPR_MODE_M4G = 0x0A,
+		OPR_MODE_NDOF_FMC_OFF = 0x0B,
+		OPR_MODE_NDOF = 0x0C
 	};
 
 	// Sets up IMU
