@@ -31,9 +31,9 @@
 
 #include <stdint.h>
 #include "stm32f4xx_hal.h"
+#include "cmsis_os.h"
 
 #define IMU_I2C_ADDR 0x28
-#define TIMEOUT 0xFFFFFFFF
 
 class IMU {
 public:
@@ -45,7 +45,7 @@ public:
 	enum Axes { x, y, z};
 
 	// Register offsets of important registers
-	enum Registers {
+	enum Registers : uint8_t {
 		/* Page id register definition */
 		BNO055_PAGE_ID_ADDR = 0X07,
 
@@ -194,7 +194,7 @@ public:
 		MAG_RADIUS_MSB_ADDR = 0X6A
 	};
 
-	enum IMU_MODE {
+	enum IMU_Mode {
 		OPR_MODE_CONFIGMODE = 0x00,
 		OPR_MODE_ACCONLY = 0x01,
 		OPR_MODE_MAGONLY = 0x02,
@@ -231,15 +231,26 @@ public:
 	// Sets the operating mode of the IMU, by default CONFIGMODE after power up
 	// NDOF mode uses max juice and everything is used
 	// If using one of the fusion modes, calibration offsets are taken into account automatically
-	void setMode(IMU_MODE);
+	void setMode(IMU_Mode mode);
 
 	// Writes 1 byte over I2C to IMU
 	// Intended as a backdoor, try not to use this if you are a user
-	void write8(Registers reg, uint8_t value);
+	// Pass in one of the Register enums for reg
+	// Returns HAL_Status of transaction
+	HAL_StatusTypeDef write8(uint8_t reg, uint8_t value);
+
+	// Reads 1 byte register and returns 1 byte
+	// Pass in one of the Register enums for reg
+	uint8_t read8(uint8_t reg);
+
+	// Reads two 1 byte registers and returns 2 bytes
+	// Pass in the register with the smaller address
+	// Will return registers at reg and reg+1 concatenated into uint16_t
+	uint16_t read16(uint8_t reg);
 
 private:
 	I2C_HandleTypeDef hi2c;		// Stores handle to i2c, set in initialization
-	IMU_MODE mode;
+	IMU_Mode currentMode;
 };
 
 #endif /* INC_IMU_IMU_H_ */

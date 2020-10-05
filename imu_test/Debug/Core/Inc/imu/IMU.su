@@ -6,5 +6,7 @@ IMU.cpp:27:8:double IMU::getOrientation(IMU::Axes)	16	static
 IMU.cpp:31:8:double IMU::getAngVel(IMU::Axes)	16	static
 IMU.cpp:35:8:double IMU::getTotalAcceleration(IMU::Axes)	16	static
 IMU.cpp:39:8:double IMU::getLinearAcceleration(IMU::Axes)	16	static
-IMU.cpp:43:6:void IMU::setMode(IMU::IMU_MODE)	16	static
-IMU.cpp:47:6:void IMU::write8(IMU::Registers, uint8_t)	24	static
+IMU.cpp:43:6:void IMU::setMode(IMU::IMU_Mode)	16	static
+IMU.cpp:56:19:HAL_StatusTypeDef IMU::write8(uint8_t, uint8_t)	32	static
+IMU.cpp:67:9:uint8_t IMU::read8(uint8_t)	32	static
+IMU.cpp:83:10:uint16_t IMU::read16(uint8_t)	32	static
