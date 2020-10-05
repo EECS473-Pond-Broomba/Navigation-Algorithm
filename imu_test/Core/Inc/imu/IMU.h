@@ -209,7 +209,8 @@ public:
 	};
 
 	// Sets up IMU
-	void initializeIMU();
+	// Pass in I2C handle
+	void initializeIMU(const I2C_HandleTypeDef &handle);
 
 	// Returns Euler angle of boat around input axis
 	// Should almost always pass z in
@@ -235,6 +236,7 @@ public:
 	void write8(Registers reg, uint8_t value);
 
 private:
+	I2C_HandleTypeDef hi2c;		// Stores handle to i2c, set in initialization
 	IMU_MODE mode;
 };
 

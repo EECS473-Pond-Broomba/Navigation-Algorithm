@@ -15,8 +15,10 @@ IMU::~IMU() {
 	// Auto-generated destructor stub
 }
 
-void IMU::initializeIMU() {
+void IMU::initializeIMU(const I2C_HandleTypeDef &handle) {
+	hi2c = handle;
 	// Set mode to NDOF
+	setMode(IMU_MODE::NDOF);
 	// Set Eular Angles units to degrees or radians
 	// Set Angular Rate units to Dps or Rps
 	// Set Acceleration units to m/s^2 or mg
@@ -43,5 +45,5 @@ void IMU::setMode(IMU_MODE) {
 }
 
 void IMU::write8(Registers reg, uint8_t value) {
-
+	HAL_I2C_Master_Transmit(hi2c, reg, &value);
 }
