@@ -218,7 +218,7 @@ public:
 	// Should almost always pass z in
 	double getOrientation(Axes axis);
 
-	// Returns angular velocity in rad/s
+	// Returns angular velocity in deg/s
 	// Should almost always pass z in
 	double getAngVel(Axes axis);
 
@@ -249,8 +249,12 @@ public:
 	uint16_t read16(uint8_t reg);
 
 private:
-	I2C_HandleTypeDef hi2c;		// Stores handle to i2c, set in initialization
+	I2C_HandleTypeDef hi2c;			// Stores handle to i2c, set in initialization
 	IMU_Mode currentMode;
+	bool totalAccelerationUnits;	// False - m/s^2, True - mg
+	bool gyroscopeUnits;			// False - Dps, True - Rps
+	bool eulerAngleUnits;			// False - Deg, True - Rad
+	bool tempUnits;					// False - C, True - F
 };
 
 #endif /* INC_IMU_IMU_H_ */

@@ -19,37 +19,113 @@ void IMU::initializeIMU(const I2C_HandleTypeDef &handle) {
 	hi2c = handle;
 	// Set mode to NDOF
 	setMode(IMU_Mode::OPR_MODE_NDOF);
-	// Set Eular Angles units to degrees or radians
-	// Set Angular Rate units to Dps or Rps
-	// Set Acceleration units to m/s^2 or mg
+	// Set Euler Angles units to degrees
+	eulerAngleUnits = false;
+	// Set Angular Rate units to Dps
+	gyroscopeUnits = false;
+	// Set Acceleration units to m/s^2
+	totalAccelerationUnits = false;
+	// Set Temperature units to C
+	tempUnits = false;
+	// Set data output format to Windows format
+	write8(Registers::BNO055_UNIT_SEL_ADDR, 0x00);
 }
 
 double IMU::getOrientation(Axes axis) {
-	return 0.0;
+	// Set register we need to read depending on the axis passed in
+	uint8_t registerToRead = 0;
+	switch(axis) {
+	case Axes::x:
+		registerToRead = Registers::BNO055_EULER_P_LSB_ADDR;
+		break;
+	case Axes::y:
+		registerToRead = Registers::BNO055_EULER_R_LSB_ADDR;
+		break;
+	case Axes::z:
+		registerToRead = Registers::BNO055_EULER_H_LSB_ADDR;
+		break;
+	default:
+		break;
+	}
+
+	// Read the data registers
+	uint16_t data = read16(registerToRead);
+	return eulerAngleUnits ? (double)data / 900.0 : (double)data / 16.0;
 }
 
 double IMU::getAngVel(Axes axis) {
-	return 0.0;
+	// Set register we need to read depending on the axis passed in
+	uint8_t registerToRead = 0;
+	switch(axis) {
+	case Axes::x:
+		registerToRead = Registers::BNO055_GYRO_DATA_X_LSB_ADDR;
+		break;
+	case Axes::y:
+		registerToRead = Registers::BNO055_GYRO_DATA_Y_LSB_ADDR;
+		break;
+	case Axes::z:
+		registerToRead = Registers::BNO055_GYRO_DATA_Z_LSB_ADDR;
+		break;
+	default:
+		break;
+	}
+
+	// Read the data registers
+	uint16_t data = read16(registerToRead);
+	return gyroscopeUnits ? (double)data / 900.0 : (double)data / 16.0;
 }
 
 double IMU::getTotalAcceleration(Axes axis) {
-	return 0.0;
+	// Set register we need to read depending on the axis passed in
+	uint8_t registerToRead = 0;
+	switch(axis) {
+	case Axes::x:
+		registerToRead = Registers::BNO055_ACCEL_DATA_X_LSB_ADDR;
+		break;
+	case Axes::y:
+		registerToRead = Registers::BNO055_ACCEL_DATA_Y_LSB_ADDR;
+		break;
+	case Axes::z:
+		registerToRead = Registers::BNO055_ACCEL_DATA_Z_LSB_ADDR;
+		break;
+	default:
+		break;
+	}
+
+	// Read the data registers
+	uint16_t data = read16(registerToRead);
+	// Section 3.6.4.1 of datasheet for conversion from LSBs to m/s^2
+	return totalAccelerationUnits ? (double)data : (double)data / 100.0;
 }
 
 double IMU::getLinearAcceleration(Axes axis) {
-	return 0.0;
+	// Set register we need to read depending on the axis passed in
+	uint8_t registerToRead = 0;
+	switch(axis) {
+	case Axes::x:
+		registerToRead = Registers::BNO055_LINEAR_ACCEL_DATA_X_LSB_ADDR;
+		break;
+	case Axes::y:
+		registerToRead = Registers::BNO055_LINEAR_ACCEL_DATA_Y_LSB_ADDR;
+		break;
+	case Axes::z:
+		registerToRead = Registers::BNO055_LINEAR_ACCEL_DATA_Z_LSB_ADDR;
+		break;
+	default:
+		break;
+	}
+
+	// Read the data registers
+	uint16_t data = read16(registerToRead);
+	// Section 3.6.5.6 of datasheet for conversion from LSBs to m/s^2
+	return (double)data / 100.0;
 }
 
 void IMU::setMode(IMU_Mode mode) {
 	write8(Registers::BNO055_OPR_MODE_ADDR, mode);
 	currentMode = mode;
 	// Time required to switch between operating modes (Datasheet Table 3-6)
-	if(mode == IMU_Mode::OPR_MODE_CONFIGMODE) {
-		vTaskDelay(19);
-	}
-	else {
-		vTaskDelay(7);
-	}
+	mode == IMU_Mode::OPR_MODE_CONFIGMODE ? vTaskDelay(19) : vTaskDelay(7);
 	return;
 }
 
@@ -93,8 +169,8 @@ uint16_t IMU::read16(uint8_t reg) {
 	if(ret != HAL_OK) {
 		return 0xFFFF;
 	}
-	// The MSB is always at the lower register address, so cast buffer[0] into 16 bits and shift it left by 8
-	// And then OR with LSB to combine into 2 bytes
-	uint16_t value = (((uint16_t)buffer[0]) << 8) | buffer[1];
+	// The LSB is always at the lower register address, so cast buffer[0] into 16 bits and shift it left by 8
+	// And then OR with MSB to combine into 2 bytes
+	uint16_t value = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
 	return value;
 }
