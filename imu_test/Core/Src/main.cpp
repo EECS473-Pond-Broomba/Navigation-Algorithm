@@ -21,7 +21,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include <imu/IMU.h>
-#include <iostream>
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -90,25 +90,14 @@ int main(void)
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-  std::cout << "Start" << std::endl;
-  /* USER CODE END Init */
-
   /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_I2C1_Init();
-  /* USER CODE BEGIN 2 */
-  imu.initializeIMU(hi2c1);
-  std::cout << " IMU Initialized" << std::endl;
-  /* USER CODE END 2 */
+//  MX_I2C1_Init();
+//  imu.initializeIMU(hi2c1);
 
   /* Init scheduler */
 //  osKernelInitialize();
@@ -135,19 +124,21 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  xTaskCreate(PrintEulerAngle, "Print Absolute Orientation", 128, NULL, 1, NULL);
-  std::cout << "Euler Angle Task Created" << std::endl;
+//  xTaskCreate(PrintEulerAngle, "Print Absolute Orientation", 128, NULL, 1, NULL);
+//  printf("Euler Angle Task Created\n");
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
 //  osKernelStart();
-  vTaskStartScheduler();
+//  vTaskStartScheduler();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -299,39 +290,16 @@ static void MX_GPIO_Init(void)
 
 }
 
-/* USER CODE BEGIN 4 */
-
 // Gets the Euler angle orientation and prints it out every 1 second
 void PrintEulerAngle(void* arg) {
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(1000);
 	xLastWakeTime = xTaskGetTickCount();
 	double zOrientation = imu.getOrientation(imu.Axes::z);
-//	std::cout << imu.getOrientation(imu.Axes::z) << std::endl;
 	while(1) {
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 	}
 }
-
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-//void StartDefaultTask(void *argument)
-//{
-//  /* USER CODE BEGIN 5 */
-//  /* Infinite loop */
-//  for(;;)
-//  {
-//    osDelay(1);
-//  }
-//  /* USER CODE END 5 */
-//}
 
 /**
   * @brief  Period elapsed callback in non blocking mode
