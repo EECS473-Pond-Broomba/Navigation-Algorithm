@@ -29,7 +29,6 @@ void IMU::initializeIMU(const I2C_HandleTypeDef &handle) {
 	tempUnits = false;
 	// Set data output format to Windows format
 	write8(Registers::BNO055_UNIT_SEL_ADDR, 0x00);
-	vTaskDelay(20);
 }
 
 double IMU::getOrientation(Axes axis) {
@@ -51,7 +50,6 @@ double IMU::getOrientation(Axes axis) {
 
 	// Read the data registers
 	uint16_t data = read16(registerToRead);
-	// Section 3.6.5.4 of datasheet for conversion from LSBs to deg/rad
 	return eulerAngleUnits ? (double)data / 900.0 : (double)data / 16.0;
 }
 
@@ -74,7 +72,6 @@ double IMU::getAngVel(Axes axis) {
 
 	// Read the data registers
 	uint16_t data = read16(registerToRead);
-	// Table 3-22 of datasheet for conversion from LSBs to Dps/Rps
 	return gyroscopeUnits ? (double)data / 900.0 : (double)data / 16.0;
 }
 

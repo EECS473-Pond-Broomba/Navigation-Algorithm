@@ -1,13 +1,8 @@
-main.cpp:82:5:int main()	8	static
-main.cpp:158:6:void SystemClock_Config()	88	static
-main.cpp:203:13:void MX_I2C1_Init()	8	static
-main.cpp:237:13:void MX_USART2_UART_Init()	8	static
-main.cpp:270:13:void MX_GPIO_Init()	48	static
-main.cpp:300:6:void InitializeIMU(void*)	16	static
-main.cpp:305:6:void PrintEulerAngle(void*)	16	static
-main.cpp:319:6:void StartDefaultTask(void*)	16	static
-main.cpp:338:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
-main.cpp:355:6:void Error_Handler()	4	static
-main.cpp:361:1:void __static_initialization_and_destruction_0(int, int)	16	static
-main.cpp:361:1:cpp)	8	static
-main.cpp:361:1:cpp)	8	static
+main.c:79:5:main	8	static
+main.c:155:6:SystemClock_Config	88	static
+main.c:200:13:MX_I2C1_Init	8	static
+main.c:234:13:MX_USART2_UART_Init	8	static
+main.c:267:13:MX_GPIO_Init	48	static
+main.c:306:6:StartDefaultTask	16	static
+main.c:325:6:HAL_TIM_PeriodElapsedCallback	16	static
+main.c:342:6:Error_Handler	4	static
