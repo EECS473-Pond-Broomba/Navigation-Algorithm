@@ -45,6 +45,8 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart2;
 
+IMU imu;
+
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -103,7 +105,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  imu.initializeIMU(hi2c1);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -293,6 +295,16 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void InitializeIMU(void* arg) {
+
+}
+
+// Gets the Euler angle orientation and prints it out every second
+void PrintEulerAngle(void* arg) {
+
+	while(1) {}
+}
 
 /* USER CODE END 4 */
 

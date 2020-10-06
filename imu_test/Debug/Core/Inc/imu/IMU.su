@@ -2,11 +2,11 @@ IMU.cpp:10:1:IMU::IMU()	16	static
 IMU.cpp:14:1:IMU::~IMU()	16	static
 IMU.cpp:14:1:virtual IMU::~IMU()	16	static
 IMU.cpp:18:6:void IMU::initializeIMU(const I2C_HandleTypeDef&)	16	static
-IMU.cpp:34:8:double IMU::getOrientation(IMU::Axes)	32	static
-IMU.cpp:56:8:double IMU::getAngVel(IMU::Axes)	32	static
-IMU.cpp:78:8:double IMU::getTotalAcceleration(IMU::Axes)	32	static
-IMU.cpp:101:8:double IMU::getLinearAcceleration(IMU::Axes)	32	static
-IMU.cpp:124:6:void IMU::setMode(IMU::IMU_Mode)	16	static
-IMU.cpp:132:19:HAL_StatusTypeDef IMU::write8(uint8_t, uint8_t)	32	static
-IMU.cpp:143:9:uint8_t IMU::read8(uint8_t)	32	static
-IMU.cpp:159:10:uint16_t IMU::read16(uint8_t)	32	static
+IMU.cpp:35:8:double IMU::getOrientation(IMU::Axes)	32	static
+IMU.cpp:58:8:double IMU::getAngVel(IMU::Axes)	32	static
+IMU.cpp:81:8:double IMU::getTotalAcceleration(IMU::Axes)	32	static
+IMU.cpp:104:8:double IMU::getLinearAcceleration(IMU::Axes)	32	static
+IMU.cpp:127:6:void IMU::setMode(IMU::IMU_Mode)	16	static
+IMU.cpp:135:19:HAL_StatusTypeDef IMU::write8(uint8_t, uint8_t)	32	static
+IMU.cpp:146:9:uint8_t IMU::read8(uint8_t)	32	static
+IMU.cpp:162:10:uint16_t IMU::read16(uint8_t)	32	static
