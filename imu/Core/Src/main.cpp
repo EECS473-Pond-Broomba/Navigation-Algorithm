@@ -22,10 +22,12 @@
 #include "IMU/IMU.h"
 
 I2C_HandleTypeDef hi2c1;
-
 UART_HandleTypeDef huart2;
-
+BaseType_t taskCreateStatus;
 IMU imu;
+
+osStatus kernelStatus;
+osThreadId eulerAngleHandle;
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -34,7 +36,17 @@ static void MX_I2C1_Init(void);
 
 
 // Our tasks
-void PrintEulerAngle(void* arg);
+// Gets the Euler angle orientation and prints it out every 1 second
+void GetEulerAngle(void* arg) {
+//	TickType_t xLastWakeTime;
+//	const TickType_t xPeriod = pdMS_TO_TICKS(1000);
+//	xLastWakeTime = xTaskGetTickCount();
+	while(1) {
+//		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+		double zOrientation = imu.getOrientation(imu.Axes::z);
+		vTaskDelay(100);
+	}
+}
 
 int main(void)
 {
@@ -48,14 +60,34 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
-  imu.initializeIMU(hi2c1);
+  imu.initializeIMU(&hi2c1);
 
-//  xTaskCreate(PrintEulerAngle, "Print Absolute Orientation", 1024, NULL, 1, NULL);
-//  vTaskStartScheduler();
+  /*
+   * The two most common ways of creating tasks and starting the scheduler both manage to create
+   * the task, but is unable to start without a hard fault.
+   */
+
+//  kernelStatus = osKernelInitialize();
+
+//  osThreadAttr_t GetEulerAngle_attributes;
+//
+//  GetEulerAngle_attributes.name = "Print Absolute Orientation";
+//  GetEulerAngle_attributes.priority = (osPriority_t) osPriorityNormal;
+//  GetEulerAngle_attributes.stack_size = 1024;
+
+//  osThreadDef(temp, GetEulerAngle, osPriorityNormal, 1, 1024);
+
+//  eulerAngleHandle = osThreadCreate(osThread(temp), NULL);
+//  osThreadId_t GetEulerAngleHandle = osThreadNew(GetEulerAngle, NULL, &GetEulerAngle_attributes);
+//  osDelay(10);
+  taskCreateStatus = xTaskCreate(GetEulerAngle, "task1", 128, NULL, 1, NULL);
+  vTaskStartScheduler();
+  int dummy = 0;
+//  kernelStatus = osKernelStart();
 
   while (1)
   {
-	  double zOrientation = imu.getOrientation(imu.Axes::z);
+//	  double zOrientation = imu.getOrientation(imu.Axes::z);
   }
 }
 
@@ -205,16 +237,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-// Gets the Euler angle orientation and prints it out every 1 second
-void PrintEulerAngle(void* arg) {
-	TickType_t xLastWakeTime;
-	const TickType_t xPeriod = pdMS_TO_TICKS(1000);
-	xLastWakeTime = xTaskGetTickCount();
-	double zOrientation = imu.getOrientation(imu.Axes::z);
-	while(1) {
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-	}
-}
+
 
 /* USER CODE END 4 */
 

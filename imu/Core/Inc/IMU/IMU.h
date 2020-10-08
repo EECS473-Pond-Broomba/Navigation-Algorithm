@@ -34,6 +34,7 @@
 #include "cmsis_os.h"
 
 #define IMU_I2C_ADDR 0x28
+#define I2C_TIMEOUT 2
 
 class IMU {
 public:
@@ -212,7 +213,7 @@ public:
 
 	// Sets up IMU
 	// Pass in I2C handle
-	void initializeIMU(const I2C_HandleTypeDef &handle);
+	void initializeIMU(I2C_HandleTypeDef* handle);
 
 	// Returns Euler angle of boat around input axis
 	// Should almost always pass z in
@@ -249,7 +250,7 @@ public:
 	uint16_t read16(uint8_t reg);
 
 private:
-	I2C_HandleTypeDef hi2c;			// Stores handle to i2c, set in initialization
+	I2C_HandleTypeDef* hi2c;			// Stores handle to i2c, set in initialization
 	IMU_Mode currentMode;
 	bool totalAccelerationUnits;	// False - m/s^2, True - mg
 	bool gyroscopeUnits;			// False - Dps, True - Rps

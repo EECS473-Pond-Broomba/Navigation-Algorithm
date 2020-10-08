@@ -1,7 +1,7 @@
 IMU.cpp:10:1:IMU::IMU()	16	static
 IMU.cpp:14:1:IMU::~IMU()	16	static
 IMU.cpp:14:1:virtual IMU::~IMU()	16	static
-IMU.cpp:18:6:void IMU::initializeIMU(const I2C_HandleTypeDef&)	16	static
+IMU.cpp:18:6:void IMU::initializeIMU(I2C_HandleTypeDef*)	16	static
 IMU.cpp:35:8:double IMU::getOrientation(IMU::Axes)	32	static
 IMU.cpp:58:8:double IMU::getAngVel(IMU::Axes)	32	static
 IMU.cpp:81:8:double IMU::getTotalAcceleration(IMU::Axes)	32	static

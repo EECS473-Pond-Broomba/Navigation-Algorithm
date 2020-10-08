@@ -15,7 +15,7 @@ IMU::~IMU() {
 	// Auto-generated destructor stub
 }
 
-void IMU::initializeIMU(const I2C_HandleTypeDef &handle) {
+void IMU::initializeIMU(I2C_HandleTypeDef* handle) {
 	hi2c = handle;
 	// Set mode to NDOF
 	setMode(IMU_Mode::OPR_MODE_NDOF);
@@ -139,7 +139,7 @@ HAL_StatusTypeDef IMU::write8(uint8_t reg, uint8_t value) {
 	buffer[0] = reg;
 	buffer[1] = value;
 	// Send buffer over
-	ret = HAL_I2C_Master_Transmit(&hi2c, IMU_I2C_ADDR << 1, buffer, 2, HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Transmit(hi2c, IMU_I2C_ADDR << 1, buffer, 2, 2);
 	return ret;
 }
 
@@ -147,12 +147,12 @@ uint8_t IMU::read8(uint8_t reg) {
 	HAL_StatusTypeDef ret;
 	uint8_t value = 0;
 	// Tell sensor that we want to read from reg
-	ret = HAL_I2C_Master_Transmit(&hi2c, IMU_I2C_ADDR << 1, &reg, 1, HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Transmit(hi2c, IMU_I2C_ADDR << 1, &reg, 1, I2C_TIMEOUT);
 	if(ret != HAL_OK) {
 		return 0xFF;
 	}
 	// Read 1 byte from reg
-	ret = HAL_I2C_Master_Receive(&hi2c, IMU_I2C_ADDR << 1, &value, 1, HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Receive(hi2c, IMU_I2C_ADDR << 1, &value, 1, I2C_TIMEOUT);
 	if(ret != HAL_OK) {
 		return 0xFF;
 	}
@@ -163,12 +163,12 @@ uint16_t IMU::read16(uint8_t reg) {
 	HAL_StatusTypeDef ret;
 	uint8_t buffer[2];
 	// Tell sensor that we want to read from reg
-	ret = HAL_I2C_Master_Transmit(&hi2c, IMU_I2C_ADDR << 1, &reg, 1, HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Transmit(hi2c, IMU_I2C_ADDR << 1, &reg, 1, I2C_TIMEOUT);
 	if(ret != HAL_OK) {
 		return 0xFFFF;
 	}
 	// Read 1 byte from reg
-	ret = HAL_I2C_Master_Receive(&hi2c, IMU_I2C_ADDR << 1, buffer, 2, HAL_MAX_DELAY);
+	ret = HAL_I2C_Master_Receive(hi2c, IMU_I2C_ADDR << 1, buffer, 2, I2C_TIMEOUT);
 	if(ret != HAL_OK) {
 		return 0xFFFF;
 	}
