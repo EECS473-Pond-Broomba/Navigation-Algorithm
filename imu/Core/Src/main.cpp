@@ -66,24 +66,24 @@ int main(void)
    * The two most common ways of creating tasks and starting the scheduler both manage to create
    * the task, but is unable to start without a hard fault.
    */
+  // Method 1:
+  kernelStatus = osKernelInitialize();
 
-//  kernelStatus = osKernelInitialize();
+  osThreadAttr_t GetEulerAngle_attributes;
 
-//  osThreadAttr_t GetEulerAngle_attributes;
-//
-//  GetEulerAngle_attributes.name = "Print Absolute Orientation";
-//  GetEulerAngle_attributes.priority = (osPriority_t) osPriorityNormal;
-//  GetEulerAngle_attributes.stack_size = 1024;
+  GetEulerAngle_attributes.name = "task1";
+  GetEulerAngle_attributes.priority = (osPriority_t) osPriorityNormal;
+  GetEulerAngle_attributes.stack_size = 1024;
+  osThreadId_t GetEulerAngleHandle = osThreadNew(GetEulerAngle, NULL, &GetEulerAngle_attributes);
 
+  // Method 2:
 //  osThreadDef(temp, GetEulerAngle, osPriorityNormal, 1, 1024);
-
 //  eulerAngleHandle = osThreadCreate(osThread(temp), NULL);
-//  osThreadId_t GetEulerAngleHandle = osThreadNew(GetEulerAngle, NULL, &GetEulerAngle_attributes);
-//  osDelay(10);
-  taskCreateStatus = xTaskCreate(GetEulerAngle, "task1", 128, NULL, 1, NULL);
-  vTaskStartScheduler();
-  int dummy = 0;
-//  kernelStatus = osKernelStart();
+  kernelStatus = osKernelStart();
+
+  // Method 3:
+//  taskCreateStatus = xTaskCreate(GetEulerAngle, "task1", 128, NULL, 1, NULL);
+//  vTaskStartScheduler();
 
   while (1)
   {

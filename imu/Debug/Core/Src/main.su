@@ -1,5 +1,5 @@
 main.cpp:40:6:void GetEulerAngle(void*)	24	static
-main.cpp:51:5:int main()	24	static
+main.cpp:51:5:int main()	48	static
 main.cpp:98:6:void SystemClock_Config()	88	static
 main.cpp:143:13:void MX_I2C1_Init()	8	static
 main.cpp:177:13:void MX_USART2_UART_Init()	8	static
