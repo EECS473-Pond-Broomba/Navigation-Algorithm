@@ -79,6 +79,7 @@ int main(void)
   // Method 2:
 //  osThreadDef(temp, GetEulerAngle, osPriorityNormal, 1, 1024);
 //  eulerAngleHandle = osThreadCreate(osThread(temp), NULL);
+//  NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
   kernelStatus = osKernelStart();
 
   // Method 3:

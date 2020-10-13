@@ -1423,6 +1423,7 @@ int main(void)
   // Method 2:
 //  osThreadDef(temp, GetEulerAngle, osPriorityNormal, 1, 1024);
 //  eulerAngleHandle = osThreadCreate(osThread(temp), NULL);
+//  NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
   kernelStatus = osKernelStart();
  8000efc:	f003 f81a 	bl	8003f34 <osKernelStart>
  8000f00:	4602      	mov	r2, r0
