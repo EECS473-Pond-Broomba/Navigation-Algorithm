@@ -33,16 +33,27 @@ static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
 
 // Our tasks
-// Gets the Euler angle orientation and prints it out every 1 second
-void GetEulerAngle(void* arg) {
+// Collects data
+void CollectData(void* arg) {
 	imu.initializeIMU(&hi2c1);
 	TickType_t xLastWakeTime;
-	const TickType_t xPeriod = pdMS_TO_TICKS(1000);
+	const TickType_t xPeriod = pdMS_TO_TICKS(SAMPLING_PERIOD);
 	xLastWakeTime = xTaskGetTickCount();
-
 	while(1) {
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 		double zOrientation = imu.getOrientation(imu.Axes::z);
+		imu.storeLinearAcceleration();
+	}
+}
+
+// Gets linear velocity in xy plane (horizontal)
+void GetLinearVelocity(void* arg) {
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriod = pdMS_TO_TICKS(2000);
+	xLastWakeTime = xTaskGetTickCount();
+	while(1) {
+		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+		double xyVelocity = imu.calculateLinearVelocity(imu.Axes::xy);
 	}
 }
 
@@ -56,7 +67,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   // Start FreeRTOS
-  xTaskCreate(GetEulerAngle, "task1", 128, NULL, 1, NULL);
+  xTaskCreate(CollectData, "euler", 128, NULL, 1, NULL);
+  xTaskCreate(GetLinearVelocity, "linvel", 128, NULL, 2, NULL);
   vTaskStartScheduler();
 
   while (1)

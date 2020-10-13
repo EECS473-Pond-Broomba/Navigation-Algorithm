@@ -19,6 +19,11 @@ void IMU::initializeIMU(I2C_HandleTypeDef* handle) {
 	hi2c = handle;
 	// Set mode to NDOF
 	setMode(IMU_Mode::OPR_MODE_NDOF);
+	// Set acceleration samples to 0 and time step to 0
+	accelTimeSteps = 0;
+	accelerationSamples[0] = 0.0;
+	accelerationSamples[1] = 0.0;
+	accelerationSamples[2] = 0.0;
 	// Set Euler Angles units to degrees
 	eulerAngleUnits = false;
 	// Set Angular Rate units to Dps
@@ -50,7 +55,7 @@ double IMU::getOrientation(Axes axis) {
 	}
 
 	// Read the data registers
-	uint16_t data = read16(registerToRead);
+	int16_t data = read16(registerToRead);
 	// Section 3.6.5.4 of datasheet for conversion from LSBs to deg/rad
 	return eulerAngleUnits ? (double)data / 900.0 : (double)data / 16.0;
 }
@@ -73,7 +78,7 @@ double IMU::getAngVel(Axes axis) {
 	}
 
 	// Read the data registers
-	uint16_t data = read16(registerToRead);
+	int16_t data = read16(registerToRead);
 	// Table 3-22 of datasheet for conversion from LSBs to Dps/Rps
 	return gyroscopeUnits ? (double)data / 900.0 : (double)data / 16.0;
 }
@@ -96,7 +101,7 @@ double IMU::getTotalAcceleration(Axes axis) {
 	}
 
 	// Read the data registers
-	uint16_t data = read16(registerToRead);
+	int16_t data = read16(registerToRead);
 	// Section 3.6.4.1 of datasheet for conversion from LSBs to m/s^2
 	return totalAccelerationUnits ? (double)data : (double)data / 100.0;
 }
@@ -119,9 +124,41 @@ double IMU::getLinearAcceleration(Axes axis) {
 	}
 
 	// Read the data registers
-	uint16_t data = read16(registerToRead);
+	int16_t data = read16(registerToRead);
 	// Section 3.6.5.6 of datasheet for conversion from LSBs to m/s^2
 	return (double)data / 100.0;
+}
+
+void IMU::storeLinearAcceleration() {
+	accelerationSamples[0] += getLinearAcceleration(Axes::x);
+	accelerationSamples[1] += getLinearAcceleration(Axes::y);
+	accelerationSamples[2] += getLinearAcceleration(Axes::z);
+	accelTimeSteps++;
+}
+
+double IMU::calculateLinearVelocity(Axes axis) {
+	// If no acceleration time steps taken, return 0 to avoid divide by zero
+	if(accelTimeSteps == 0) {
+		return 0.0;
+	}
+	double velocity;
+	switch(axis) {
+	case Axes::x:
+		velocity = accelerationSamples[0] * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+		break;
+	case Axes::y:
+		velocity = accelerationSamples[1] * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+		break;
+	case Axes::z:
+		velocity = accelerationSamples[2] * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+		break;
+	case Axes::xy:
+		velocity = sqrt((accelerationSamples[0] * accelerationSamples[0] + accelerationSamples[1] * accelerationSamples[1]) * ((accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0) * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0)));
+		break;
+	default:
+		break;
+	}
+	return velocity;
 }
 
 void IMU::setMode(IMU_Mode mode) {
@@ -143,7 +180,7 @@ HAL_StatusTypeDef IMU::write8(uint8_t reg, uint8_t value) {
 	return ret;
 }
 
-uint8_t IMU::read8(uint8_t reg) {
+int8_t IMU::read8(uint8_t reg) {
 	HAL_StatusTypeDef ret;
 	uint8_t value = 0;
 	// Tell sensor that we want to read from reg
@@ -156,10 +193,10 @@ uint8_t IMU::read8(uint8_t reg) {
 	if(ret != HAL_OK) {
 		return 0xFF;
 	}
-	return value;
+	return (int8_t)value;
 }
 
-uint16_t IMU::read16(uint8_t reg) {
+int16_t IMU::read16(uint8_t reg) {
 	HAL_StatusTypeDef ret;
 	uint8_t buffer[2];
 	// Tell sensor that we want to read from reg
@@ -174,6 +211,6 @@ uint16_t IMU::read16(uint8_t reg) {
 	}
 	// The LSB is always at the lower register address, so cast buffer[0] into 16 bits and shift it left by 8
 	// And then OR with MSB to combine into 2 bytes
-	uint16_t value = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
+	int16_t value = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
 	return value;
 }

@@ -32,9 +32,12 @@
 #include <stdint.h>
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
+#include <math.h>
 
 #define IMU_I2C_ADDR 0x28
 #define I2C_TIMEOUT 2
+#define SAMPLING_PERIOD 500
+#define ACCELERATION_TIME_STEP 500		// Time step between storing linear acceleration samples in ms
 
 class IMU {
 public:
@@ -43,7 +46,7 @@ public:
 
 	// z - Yaw. Vertical axis that we are interested in, should almost always use z
 	// x & y - Pitch and roll
-	enum Axes { x, y, z};
+	enum Axes { x, y, z, xy };
 
 	// Register offsets of important registers
 	enum Registers : uint8_t {
@@ -229,6 +232,12 @@ public:
 	// Returns linear motion acceleration without gravity in m/s^2
 	double getLinearAcceleration(Axes axis);
 
+	// Stores one sample of input axis into accelerationSamples
+	void storeLinearAcceleration();
+
+	// Integrates linear acceleration and returns linear velocity
+	double calculateLinearVelocity(Axes axis);
+
 	// Sets the operating mode of the IMU, by default CONFIGMODE after power up
 	// NDOF mode uses max juice and everything is used
 	// If using one of the fusion modes, calibration offsets are taken into account automatically
@@ -242,16 +251,18 @@ public:
 
 	// Reads 1 byte register and returns 1 byte
 	// Pass in one of the Register enums for reg
-	uint8_t read8(uint8_t reg);
+	int8_t read8(uint8_t reg);
 
 	// Reads two 1 byte registers and returns 2 bytes
 	// Pass in the register with the smaller address
 	// Will return registers at reg and reg+1 concatenated into uint16_t
-	uint16_t read16(uint8_t reg);
+	int16_t read16(uint8_t reg);
 
 private:
 	I2C_HandleTypeDef* hi2c;			// Stores handle to i2c, set in initialization
 	IMU_Mode currentMode;
+	double accelerationSamples[3];	// Stores acceleration samples
+	int accelTimeSteps;				// Keeps track of number of time steps for acceleration samples
 	bool totalAccelerationUnits;	// False - m/s^2, True - mg
 	bool gyroscopeUnits;			// False - Dps, True - Rps
 	bool eulerAngleUnits;			// False - Deg, True - Rad
