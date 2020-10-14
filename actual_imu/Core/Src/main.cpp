@@ -53,6 +53,31 @@ void CollectData(void* arg) {
 	}
 }
 
+// Task to check for errors
+void CheckErrors(void* arg) {
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriod = pdMS_TO_TICKS(ERROR_CHECK_PERIOD);
+	xLastWakeTime = xTaskGetTickCount();
+	while(1) {
+		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+		if(imu.getSysStatus() == 1) {
+			int errorCode = imu.getSysError();
+		}
+	}
+}
+
+// Task to check calibration status
+void CheckCalibStatus(void* arg) {
+	imu.initializeIMU(&hi2c1);
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriod = pdMS_TO_TICKS(CALIB_STAT_PERIOD);
+	xLastWakeTime = xTaskGetTickCount();
+	while(1) {
+		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+		int8_t status = imu.getCalibStatus();
+	}
+}
+
 int main(void)
 {
   HAL_Init();
@@ -63,7 +88,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   // Start FreeRTOS
-  xTaskCreate(CollectData, "euler", 128, NULL, 1, NULL);
+  xTaskCreate(CollectData, "data", 128, NULL, 1, NULL);
+//  xTaskCreate(CheckCalibStatus, "calstat", 128, NULL, 1, NULL);
   vTaskStartScheduler();
 
   while (1)
@@ -213,30 +239,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
-}
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
-{
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-//    osDelay(1);
-	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    vTaskDelay(100);
-  }
-  /* USER CODE END 5 */
 }
 
 /**

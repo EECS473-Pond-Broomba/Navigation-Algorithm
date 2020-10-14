@@ -181,6 +181,18 @@ void IMU::setMode(IMU_Mode mode) {
 	return;
 }
 
+uint8_t IMU::getCalibStatus() {
+	return (uint8_t)read8(Registers::BNO055_CALIB_STAT_ADDR);
+}
+
+uint8_t IMU::getSysStatus() {
+	return (uint8_t)read8(Registers::BNO055_SYS_STAT_ADDR);
+}
+
+uint8_t IMU::getSysError() {
+	return (uint8_t)read8(Registers::BNO055_SYS_ERR_ADDR);
+}
+
 HAL_StatusTypeDef IMU::write8(uint8_t reg, uint8_t value) {
 	HAL_StatusTypeDef ret;
 	// Combine reg and value into a buffer

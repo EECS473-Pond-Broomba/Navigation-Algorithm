@@ -10,6 +10,9 @@ IMU.cpp:136:6:void IMU::storeLinearAcceleration()	24	static
 IMU.cpp:146:6:void IMU::calculateLinearVelocity()	40	static
 IMU.cpp:156:8:double IMU::getLinearVelocity(IMU::Axes)	32	static
 IMU.cpp:176:6:void IMU::setMode(IMU::IMU_Mode)	16	static
-IMU.cpp:184:19:HAL_StatusTypeDef IMU::write8(uint8_t, uint8_t)	32	static
-IMU.cpp:195:8:int8_t IMU::read8(uint8_t)	32	static
-IMU.cpp:211:9:int16_t IMU::read16(uint8_t)	32	static
+IMU.cpp:184:9:uint8_t IMU::getCalibStatus()	16	static
+IMU.cpp:188:9:uint8_t IMU::getSysStatus()	16	static
+IMU.cpp:192:9:uint8_t IMU::getSysError()	16	static
+IMU.cpp:196:19:HAL_StatusTypeDef IMU::write8(uint8_t, uint8_t)	32	static
+IMU.cpp:207:8:int8_t IMU::read8(uint8_t)	32	static
+IMU.cpp:223:9:int16_t IMU::read16(uint8_t)	32	static

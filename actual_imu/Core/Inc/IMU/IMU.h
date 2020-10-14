@@ -38,6 +38,8 @@
 #define I2C_TIMEOUT 2
 #define SAMPLING_PERIOD 500							// Time step between storing
 #define ACCELERATION_TIME_STEP SAMPLING_PERIOD		// Time step between storing linear acceleration samples in ms
+#define ERROR_CHECK_PERIOD 10000					// Time between checking errors
+#define CALIB_STAT_PERIOD 2000						// Time between calibration status checks
 
 class IMU {
 public:
@@ -245,6 +247,15 @@ public:
 	// NDOF mode uses max juice and everything is used
 	// If using one of the fusion modes, calibration offsets are taken into account automatically
 	void setMode(IMU_Mode mode);
+
+	// Returns calibration status
+	uint8_t getCalibStatus();
+
+	// Returns system status (4.3.58 datasheet
+	uint8_t getSysStatus();
+
+	// Returns value of SYS_ERR register
+	uint8_t getSysError();
 
 	// Writes 1 byte over I2C to IMU
 	// Intended as a backdoor, try not to use this if you are a user
