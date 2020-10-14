@@ -32,8 +32,9 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
 
-// Our tasks
-// Collects data
+// --------------Our tasks-----------------
+// Collects data, task that initializes the IMU, do not remove this task without initializing IMU elsewhere
+// Add anymore data collection functions in this task
 void CollectData(void* arg) {
 	imu.initializeIMU(&hi2c1);
 	TickType_t xLastWakeTime;
@@ -42,18 +43,13 @@ void CollectData(void* arg) {
 	while(1) {
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 		double zOrientation = imu.getOrientation(imu.Axes::z);
+		// Collect linear acceleration samples with other data, could be sampled at
+		// different period in another task with the ACCELERATION_TIME_STEP macro
 		imu.storeLinearAcceleration();
-	}
-}
-
-// Gets linear velocity in xy plane (horizontal)
-void GetLinearVelocity(void* arg) {
-	TickType_t xLastWakeTime;
-	const TickType_t xPeriod = pdMS_TO_TICKS(2000);
-	xLastWakeTime = xTaskGetTickCount();
-	while(1) {
-		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-		double xyVelocity = imu.calculateLinearVelocity(imu.Axes::xy);
+		// Calculate linear velocity, storing of linear acceleration must be followed
+		// by calculation of linear velocity
+		imu.calculateLinearVelocity();
+		double xyVelocity = imu.getLinearVelocity(imu.Axes::xy);
 	}
 }
 
@@ -68,7 +64,6 @@ int main(void)
   MX_I2C1_Init();
   // Start FreeRTOS
   xTaskCreate(CollectData, "euler", 128, NULL, 1, NULL);
-  xTaskCreate(GetLinearVelocity, "linvel", 128, NULL, 2, NULL);
   vTaskStartScheduler();
 
   while (1)

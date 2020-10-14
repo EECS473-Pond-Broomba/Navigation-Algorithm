@@ -36,8 +36,8 @@
 
 #define IMU_I2C_ADDR 0x28
 #define I2C_TIMEOUT 2
-#define SAMPLING_PERIOD 500
-#define ACCELERATION_TIME_STEP 500		// Time step between storing linear acceleration samples in ms
+#define SAMPLING_PERIOD 500							// Time step between storing
+#define ACCELERATION_TIME_STEP SAMPLING_PERIOD		// Time step between storing linear acceleration samples in ms
 
 class IMU {
 public:
@@ -235,8 +235,11 @@ public:
 	// Stores one sample of input axis into accelerationSamples
 	void storeLinearAcceleration();
 
-	// Integrates linear acceleration and returns linear velocity
-	double calculateLinearVelocity(Axes axis);
+	// Integrates linear acceleration and stores linear velocity in velocity[]
+	void calculateLinearVelocity();
+
+	// Returns elements in array or calculates combination of vectors
+	double getLinearVelocity(Axes axis);
 
 	// Sets the operating mode of the IMU, by default CONFIGMODE after power up
 	// NDOF mode uses max juice and everything is used
@@ -261,7 +264,8 @@ public:
 private:
 	I2C_HandleTypeDef* hi2c;			// Stores handle to i2c, set in initialization
 	IMU_Mode currentMode;
-	double accelerationSamples[3];	// Stores acceleration samples
+	double accelerationSamples[3][2];	// Stores acceleration samples, column 0 for previous, column 1 for incoming
+	double velocity[3];					// Stores velocity of all 3 axes
 	int accelTimeSteps;				// Keeps track of number of time steps for acceleration samples
 	bool totalAccelerationUnits;	// False - m/s^2, True - mg
 	bool gyroscopeUnits;			// False - Dps, True - Rps

@@ -21,9 +21,12 @@ void IMU::initializeIMU(I2C_HandleTypeDef* handle) {
 	setMode(IMU_Mode::OPR_MODE_NDOF);
 	// Set acceleration samples to 0 and time step to 0
 	accelTimeSteps = 0;
-	accelerationSamples[0] = 0.0;
-	accelerationSamples[1] = 0.0;
-	accelerationSamples[2] = 0.0;
+	accelerationSamples[0][0] = 0.0;
+	accelerationSamples[0][1] = 0.0;
+	accelerationSamples[1][0] = 0.0;
+	accelerationSamples[1][1] = 0.0;
+	accelerationSamples[2][0] = 0.0;
+	accelerationSamples[2][1] = 0.0;
 	// Set Euler Angles units to degrees
 	eulerAngleUnits = false;
 	// Set Angular Rate units to Dps
@@ -129,36 +132,45 @@ double IMU::getLinearAcceleration(Axes axis) {
 	return (double)data / 100.0;
 }
 
+// Shifts elements in column 1 into column 0 and new readings into column 1
 void IMU::storeLinearAcceleration() {
-	accelerationSamples[0] += getLinearAcceleration(Axes::x);
-	accelerationSamples[1] += getLinearAcceleration(Axes::y);
-	accelerationSamples[2] += getLinearAcceleration(Axes::z);
+	accelerationSamples[0][0] = accelerationSamples[0][1];
+	accelerationSamples[0][1] = getLinearAcceleration(Axes::x);
+	accelerationSamples[1][0] = accelerationSamples[1][1];
+	accelerationSamples[1][1] = getLinearAcceleration(Axes::y);
+	accelerationSamples[2][0] = accelerationSamples[2][1];
+	accelerationSamples[2][1] = getLinearAcceleration(Axes::z);
 	accelTimeSteps++;
 }
 
-double IMU::calculateLinearVelocity(Axes axis) {
-	// If no acceleration time steps taken, return 0 to avoid divide by zero
+void IMU::calculateLinearVelocity() {
+	// If no acceleration time steps taken, return to avoid divide by zero
 	if(accelTimeSteps == 0) {
-		return 0.0;
+		return;
 	}
-	double velocity;
+	velocity[0] += accelerationSamples[0][0] + accelerationSamples[0][1] * 0.5 * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+	velocity[1] += accelerationSamples[1][0] + accelerationSamples[1][1] * 0.5 * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+	velocity[2] += accelerationSamples[2][0] + accelerationSamples[2][1] * 0.5 * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+}
+
+double IMU::getLinearVelocity(Axes axis) {
 	switch(axis) {
 	case Axes::x:
-		velocity = accelerationSamples[0] * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+		return velocity[0];
 		break;
 	case Axes::y:
-		velocity = accelerationSamples[1] * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+		return velocity[1];
 		break;
 	case Axes::z:
-		velocity = accelerationSamples[2] * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+		return velocity[2];
 		break;
 	case Axes::xy:
-		velocity = sqrt((accelerationSamples[0] * accelerationSamples[0] + accelerationSamples[1] * accelerationSamples[1]) * ((accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0) * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0)));
+		return sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
 		break;
 	default:
 		break;
 	}
-	return velocity;
+	return 0.0;
 }
 
 void IMU::setMode(IMU_Mode mode) {
