@@ -49,3 +49,7 @@ EWARM/*
 
 *.o
 .mxproject
+
+.metadata/
+RemoteSystemsTempFile/
+*.cfg
