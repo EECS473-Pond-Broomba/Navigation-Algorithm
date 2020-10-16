@@ -1,0 +1,14 @@
+main.cpp:45:6:void CollectData(void*)	48	static
+main.cpp:64:6:void CheckErrors(void*)	32	static
+main.cpp:77:6:void CheckCalibStatus(void*)	32	static
+main.cpp:88:6:void blink(void*)	16	static
+main.cpp:97:6:void print_uart(char*, size_t)	16	static
+main.cpp:102:6:void gps(void*)	240	static
+main.cpp:128:5:int main()	16	static
+main.cpp:153:6:void SystemClock_Config()	88	static
+main.cpp:198:13:void MX_I2C1_Init()	8	static
+main.cpp:235:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+main.cpp:252:6:void Error_Handler()	4	static
+main.cpp:258:1:void __static_initialization_and_destruction_0(int, int)	16	static
+main.cpp:258:1:cpp)	8	static
+main.cpp:258:1:cpp)	8	static
