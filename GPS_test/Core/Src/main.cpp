@@ -25,14 +25,12 @@
 #include "stdio.h"
 
 #include "GPS.h"
-
+#include "uart_printf.h"
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void blink (void*);
 void gps(void*);
-
-void print_uart(char* msg, size_t size);
 /**
   * @brief  The application entry point.
   * @retval int
@@ -73,39 +71,30 @@ void blink(void *argument)
   for(;;)
   {
 	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    vTaskDelay(1000);
+    vTaskDelay(500);
   }
   /* USER CODE END StartDefaultTask */
 }
 
-void print_uart(char* msg, size_t size)
-{
-	HAL_UART_Transmit(&huart2, (uint8_t*) msg, size, 1000);
-}
 
 void gps(void * arg)
 {
 	GPS gps;
 	gps.init(&huart1);
-
+	//uart_printf("Starting GPS!!!\r\n");
 	for(;;)
 	{
 		if(gps.update())
 		{
-			char* msg = "Latitude = ";
 			location pos = gps.getPosition();
 
-			print_uart(msg, sizeof(msg));
-			sprintf(msg,"%f\n",pos.latitude);
-			print_uart(msg, sizeof(msg));
-
-			msg = "Longitude = ";
-			print_uart(msg, sizeof(msg));
-			sprintf(msg,"%f\n",pos.longitude);
-			print_uart(msg, sizeof(msg));
-
+			//uart_printf("Latitude = %f\r\nLongitude = %f\r\n", pos.latitude, pos.longitude);
 		}
-		HAL_Delay(1000);
+		else
+		{
+			//uart_printf("NO SIGNAL !!!!\r\n");
+		}
+		vTaskDelay(1000);
 	}
 }
 
