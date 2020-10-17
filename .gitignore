@@ -53,3 +53,4 @@ EWARM/*
 .metadata/
 RemoteSystemsTempFiles/
 *.cfg
+*/.settings/*
