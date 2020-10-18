@@ -19,10 +19,11 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "IMU/IMU.h"
+#include "uart_printf.h"
 
 I2C_HandleTypeDef hi2c1;
 
-UART_HandleTypeDef huart2;
+
 
 IMU imu;
 
@@ -78,6 +79,18 @@ void CheckCalibStatus(void* arg) {
 	}
 }
 
+void blink(void *argument)
+{
+  /* USER CODE BEGIN StartDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    vTaskDelay(500);
+  }
+  /* USER CODE END StartDefaultTask */
+}
+
 int main(void)
 {
   HAL_Init();
@@ -89,7 +102,8 @@ int main(void)
   MX_I2C1_Init();
   // Start FreeRTOS
   xTaskCreate(CollectData, "data", 128, NULL, 1, NULL);
-//  xTaskCreate(CheckCalibStatus, "calstat", 128, NULL, 1, NULL);
+  xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
+  //xTaskCreate(CheckCalibStatus, "calstat", 128, NULL, 1, NULL);
   vTaskStartScheduler();
 
   while (1)

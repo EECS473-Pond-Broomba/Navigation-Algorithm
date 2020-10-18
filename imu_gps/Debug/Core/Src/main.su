@@ -1,9 +1,11 @@
+uart_printf.h:16:6:void vprint(const char*, va_list)	216	static
+uart_printf.h:25:6:)	16	static
 main.cpp:45:6:void CollectData(void*)	48	static
 main.cpp:64:6:void CheckErrors(void*)	32	static
 main.cpp:77:6:void CheckCalibStatus(void*)	32	static
 main.cpp:88:6:void blink(void*)	16	static
 main.cpp:97:6:void print_uart(char*, size_t)	16	static
-main.cpp:102:6:void gps(void*)	240	static
+main.cpp:102:6:void gps(void*)	248	static
 main.cpp:128:5:int main()	16	static
 main.cpp:153:6:void SystemClock_Config()	88	static
 main.cpp:198:13:void MX_I2C1_Init()	8	static
