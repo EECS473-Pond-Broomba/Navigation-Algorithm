@@ -24,7 +24,7 @@ void GPS::init(UART_HandleTypeDef* handle){
 }
 
 bool GPS::update(){
-	char* data[100];
+	char* data = "null";
 	//TODO Maybe change this to an interrupt based thing
 	//HAL_UART_Receive(huart,(uint8_t*) data, sizeof(data), 1000);
 

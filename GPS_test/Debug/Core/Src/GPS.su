@@ -2,5 +2,5 @@ GPS.cpp:10:1:GPS::GPS()	16	static
 GPS.cpp:15:1:GPS::~GPS()	16	static
 GPS.cpp:15:1:virtual GPS::~GPS()	16	static
 GPS.cpp:19:6:void GPS::init(UART_HandleTypeDef*)	16	static
-GPS.cpp:26:6:bool GPS::update()	424	static
+GPS.cpp:26:6:bool GPS::update()	32	static
 GPS.cpp:42:10:location GPS::getPosition()	48	static
