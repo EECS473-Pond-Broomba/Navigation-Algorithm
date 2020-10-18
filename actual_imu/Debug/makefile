@@ -16,6 +16,7 @@ RM := rm -rf
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include Core/Inc/IMU/subdir.mk
+-include Core/Inc/I2C/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -66,8 +67,8 @@ actual_imu.bin \
 all: actual_imu.elf secondary-outputs
 
 # Tool invocations
-actual_imu.elf: $(OBJS) $(USER_OBJS) /home/cy/eecs473/project/Navigation-Algorithm/actual_imu/STM32F401RETX_FLASH.ld
-	arm-none-eabi-g++ -o "actual_imu.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/cy/eecs473/project/Navigation-Algorithm/actual_imu/STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="actual_imu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+actual_imu.elf: $(OBJS) $(USER_OBJS) /home/rishgoel/PondBroomba/Navigation-Algorithm/actual_imu/STM32F401RETX_FLASH.ld
+	arm-none-eabi-g++ -o "actual_imu.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/rishgoel/PondBroomba/Navigation-Algorithm/actual_imu/STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="actual_imu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -1,3 +1,4 @@
+"Core/Inc/I2C/I2C.o"
 "Core/Inc/IMU/IMU.o"
 "Core/Src/freertos.o"
 "Core/Src/main.o"
