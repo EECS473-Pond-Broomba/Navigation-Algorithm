@@ -40,7 +40,11 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
+<<<<<<< HEAD
  ../Core/Inc/IMU/IMU.h ../Core/Inc/I2C/I2C.h
+=======
+ ../Core/Inc/IMU/IMU.h ../Core/Inc/uart_printf.h ../Core/Inc/main.h
+>>>>>>> 1b79143c88bc39ee0bf1dba5bd9b417677685455
 
 ../Core/Inc/main.h:
 
@@ -128,4 +132,10 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 
 ../Core/Inc/IMU/IMU.h:
 
+<<<<<<< HEAD
 ../Core/Inc/I2C/I2C.h:
+=======
+../Core/Inc/uart_printf.h:
+
+../Core/Inc/main.h:
+>>>>>>> 1b79143c88bc39ee0bf1dba5bd9b417677685455

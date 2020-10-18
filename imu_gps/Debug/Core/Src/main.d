@@ -42,7 +42,7 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/IMU/IMU.h ../Core/Inc/gpio.h ../Core/Inc/main.h \
  ../Core/Inc/usart.h ../Core/Inc/GPS.h ../Core/Inc/usart.h \
- ../Core/Inc/lwgps.h
+ ../Core/Inc/lwgps.h ../Core/Inc/uart_printf.h
 
 ../Core/Inc/main.h:
 
@@ -141,3 +141,5 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Core/Inc/usart.h:
 
 ../Core/Inc/lwgps.h:
+
+../Core/Inc/uart_printf.h:

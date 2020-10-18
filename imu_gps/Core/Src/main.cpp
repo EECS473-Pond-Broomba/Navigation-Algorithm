@@ -23,7 +23,7 @@
 #include "usart.h"
 #include "stdio.h"
 #include "GPS.h"
-
+#include "uart_printf.h"
 
 I2C_HandleTypeDef hi2c1;
 
@@ -112,12 +112,12 @@ void gps(void * arg)
 			location pos = gps.getPosition();
 
 			print_uart(msg, sizeof(msg));
-			sprintf(msg,"%f\n",pos.latitude);
+			uart_printf(msg,"%f\n",pos.latitude);
 			print_uart(msg, sizeof(msg));
 
 			msg = "Longitude = ";
 			print_uart(msg, sizeof(msg));
-			sprintf(msg,"%f\n",pos.longitude);
+			uart_printf(msg,"%f\n",pos.longitude);
 			print_uart(msg, sizeof(msg));
 
 		}
