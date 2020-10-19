@@ -30,7 +30,7 @@
 #define INC_IMU_IMU_H_
 
 #include <stdint.h>
-#include "stm32f4xx_hal.h"
+#include "I2C/I2C.h"
 #include "cmsis_os.h"
 #include <math.h>
 
@@ -41,13 +41,15 @@
 #define ERROR_CHECK_PERIOD 10000					// Time between checking errors
 #define CALIB_STAT_PERIOD 2000						// Time between calibration status checks
 
+// z - Yaw. Vertical axis that we are interested in, should almost always use z
+	// x & y - Pitch and roll
+
+
 class IMU {
 public:
 	IMU();
 	virtual ~IMU();
 
-	// z - Yaw. Vertical axis that we are interested in, should almost always use z
-	// x & y - Pitch and roll
 	enum Axes { x, y, z, xy };
 
 	// Register offsets of important registers
@@ -260,23 +262,8 @@ public:
 	// Returns value of SYS_ERR register
 	uint8_t getSysError();
 
-	// Writes 1 byte over I2C to IMU
-	// Intended as a backdoor, try not to use this if you are a user
-	// Pass in one of the Register enums for reg
-	// Returns HAL_Status of transaction
-	HAL_StatusTypeDef write8(uint8_t reg, uint8_t value);
-
-	// Reads 1 byte register and returns 1 byte
-	// Pass in one of the Register enums for reg
-	int8_t read8(uint8_t reg);
-
-	// Reads two 1 byte registers and returns 2 bytes
-	// Pass in the register with the smaller address
-	// Will return registers at reg and reg+1 concatenated into uint16_t
-	int16_t read16(uint8_t reg);
-
 private:
-	I2C_HandleTypeDef* hi2c;			// Stores handle to i2c, set in initialization
+	I2C i2c;
 	IMU_Mode currentMode;
 	double accelerationSamples[3][2];	// Stores acceleration samples, column 0 for previous, column 1 for incoming
 	double velocity[3];					// Stores velocity of all 3 axes
