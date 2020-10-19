@@ -36,7 +36,7 @@
 
 #define IMU_I2C_ADDR 0x28
 #define I2C_TIMEOUT 2
-#define SAMPLING_PERIOD 500							// Time step between storing
+#define SAMPLING_PERIOD 20							// Time step between storing
 #define ACCELERATION_TIME_STEP SAMPLING_PERIOD		// Time step between storing linear acceleration samples in ms
 #define ERROR_CHECK_PERIOD 10000					// Time between checking errors
 #define CALIB_STAT_PERIOD 2000						// Time between calibration status checks
@@ -230,6 +230,9 @@ public:
 
 	// Returns gravity + linear motion acceleration vector in m/s^2
 	double getTotalAcceleration(Axes axis);
+
+	// Store total acceleration into acceleration samples
+	void storeTotalAcceleration();
 
 	// Returns linear motion acceleration without gravity in m/s^2
 	double getLinearAcceleration(Axes axis);

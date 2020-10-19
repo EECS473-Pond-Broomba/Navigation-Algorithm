@@ -33,6 +33,10 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
 
+double speeds[1000];
+double accelerations[1000];
+int speedsCounter = 0;
+
 // --------------Our tasks-----------------
 // Collects data, task that initializes the IMU, do not remove this task without initializing IMU elsewhere
 // Add anymore data collection functions in this task
@@ -44,13 +48,15 @@ void CollectData(void* arg) {
 	while(1) {
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 		double zOrientation = imu.getOrientation(imu.Axes::z);
-		// Collect linear acceleration samples with other data, could be sampled at
-		// different period in another task with the ACCELERATION_TIME_STEP macro
-		imu.storeLinearAcceleration();
-		// Calculate linear velocity, storing of linear acceleration must be followed
-		// by calculation of linear velocity
-		imu.calculateLinearVelocity();
-		double xyVelocity = imu.getLinearVelocity(imu.Axes::xy);
+			// Collect linear acceleration samples with other data, could be sampled at
+			// different period in another task with the ACCELERATION_TIME_STEP macro
+			imu.storeLinearAcceleration();
+//			accelerations[speedsCounter++] = imu.getLinearAcceleration(imu.Axes::x);
+			// Calculate linear velocity, storing of linear acceleration must be followed
+			// by calculation of linear velocity
+			imu.calculateLinearVelocity();
+			//uart_printf("speed: %s\n\r", imu.getLinearVelocity(imu.Axes::x));
+			speeds[speedsCounter++] = imu.getLinearVelocity(imu.Axes::x);
 	}
 }
 
@@ -102,7 +108,7 @@ int main(void)
   MX_I2C1_Init();
   // Start FreeRTOS
   xTaskCreate(CollectData, "data", 128, NULL, 1, NULL);
-  xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
+//  xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
   //xTaskCreate(CheckCalibStatus, "calstat", 128, NULL, 1, NULL);
   vTaskStartScheduler();
 
