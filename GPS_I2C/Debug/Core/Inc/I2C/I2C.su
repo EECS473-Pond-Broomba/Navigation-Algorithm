@@ -1,6 +1,0 @@
-I2C.cpp:10:1:I2C::I2C()	16	static
-I2C.cpp:15:1:I2C::~I2C()	16	static
-I2C.cpp:15:1:virtual I2C::~I2C()	16	static
-I2C.cpp:19:19:HAL_StatusTypeDef I2C::write8(uint8_t, uint8_t)	32	static
-I2C.cpp:30:8:int8_t I2C::read8(uint8_t)	32	static
-I2C.cpp:46:9:int16_t I2C::read16(uint8_t)	32	static
