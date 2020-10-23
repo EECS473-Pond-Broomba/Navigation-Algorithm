@@ -109,6 +109,17 @@ double IMU::getTotalAcceleration(Axes axis) {
 	return totalAccelerationUnits ? (double)data : (double)data / 100.0;
 }
 
+// Shifts elements in column 1 into column 0 and new readings into column 1
+void IMU::storeTotalAcceleration() {
+	accelerationSamples[0][0] = accelerationSamples[0][1];
+	accelerationSamples[0][1] = getTotalAcceleration(Axes::x);
+	accelerationSamples[1][0] = accelerationSamples[1][1];
+	accelerationSamples[1][1] = getTotalAcceleration(Axes::y);
+	accelerationSamples[2][0] = accelerationSamples[2][1];
+	accelerationSamples[2][1] = getTotalAcceleration(Axes::z);
+	accelTimeSteps++;
+}
+
 double IMU::getLinearAcceleration(Axes axis) {
 	// Set register we need to read depending on the axis passed in
 	uint8_t registerToRead = 0;
@@ -148,9 +159,9 @@ void IMU::calculateLinearVelocity() {
 	if(accelTimeSteps == 0) {
 		return;
 	}
-	velocity[0] += accelerationSamples[0][0] + accelerationSamples[0][1] * 0.5 * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
-	velocity[1] += accelerationSamples[1][0] + accelerationSamples[1][1] * 0.5 * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
-	velocity[2] += accelerationSamples[2][0] + accelerationSamples[2][1] * 0.5 * (accelTimeSteps * ACCELERATION_TIME_STEP / 1000.0);
+	velocity[0] += (accelerationSamples[0][0] + accelerationSamples[0][1]) / 2.0 * (ACCELERATION_TIME_STEP / 1000.0);
+	velocity[1] += (accelerationSamples[1][0] + accelerationSamples[1][1]) / 2.0 * (ACCELERATION_TIME_STEP / 1000.0);
+	velocity[2] += (accelerationSamples[2][0] + accelerationSamples[2][1]) / 2.0 * (ACCELERATION_TIME_STEP / 1000.0);
 }
 
 double IMU::getLinearVelocity(Axes axis) {
