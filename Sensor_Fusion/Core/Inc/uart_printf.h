@@ -16,7 +16,7 @@
 
 void vprint(const char *fmt, va_list argp)
 {
-	char temp[200];
+	char temp[500];
 	if(vsprintf(temp, fmt, argp))
 	{
 		HAL_UART_Transmit(&huart2, (uint8_t*) temp, strlen(temp), 1000);
