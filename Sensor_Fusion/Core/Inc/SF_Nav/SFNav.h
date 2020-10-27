@@ -30,6 +30,8 @@ public:
 
 	void update();
 
+	state_var get_state();
+
 private:
 	IMU* imu;
 	GPS* gps;

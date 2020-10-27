@@ -59,8 +59,10 @@ void SF_Nav::update()
 	state.y = state.y + cosd(bearing)* dist;
 	state.vX = sind(bearing) * curr_vel.speed;
 	state.vY = cosd(bearing) * curr_vel.speed;
-	//Run through the Kalman filter equations
 
+	//
+
+	//Run through the Kalman filter equations
 	//State Prediction
 	x_pred = A * x + B * u_n;
 
