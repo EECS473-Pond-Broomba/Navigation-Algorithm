@@ -26,7 +26,7 @@ public:
 	SF_Nav();
 	virtual ~SF_Nav();
 
-	void init(float refresh_time);
+	void init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,float refresh_time);
 
 	void update();
 

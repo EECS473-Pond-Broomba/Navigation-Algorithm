@@ -16,8 +16,12 @@ SF_Nav::~SF_Nav() {
 	// TODO Auto-generated destructor stub
 }
 
-void SF_Nav::init(float refresh_time)
+void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,float refresh_time)
 {
+	//Initialize IMU and GPS
+	imu->initializeIMU(ih);
+	gps->init(uh);
+
 	//Initialize all matrices and set refresh time
 	t = refresh_time;
 
@@ -36,8 +40,6 @@ void SF_Nav::init(float refresh_time)
 	//TODO: Get an estimate for Q and R
 	Q << Eigen::Matrix4f::Identity();
 	R << Eigen::Matrix4f::Identity();
-
-
 
 }
 
