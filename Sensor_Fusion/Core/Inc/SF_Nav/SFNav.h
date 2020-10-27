@@ -14,10 +14,10 @@
 
 struct state_var
 {
-	float x;
-	float y;
-	float vX;
-	float vY;
+	double x;
+	double y;
+	double vX;
+	double vY;
 };
 
 
@@ -29,7 +29,6 @@ public:
 	void init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,float refresh_time);
 
 	void update();
-
 	state_var get_state();
 
 private:
@@ -41,6 +40,16 @@ private:
 	location curr_location, prev_location;
 	velocity curr_vel, prev_vel;
 	state_var state;
+
+	inline double sind(double x)
+	{
+	    return sin(x * M_PI / 180);
+	}
+
+	inline double cosd(double x)
+	{
+	    return cos(x * M_PI / 180);
+	}
 
 };
 

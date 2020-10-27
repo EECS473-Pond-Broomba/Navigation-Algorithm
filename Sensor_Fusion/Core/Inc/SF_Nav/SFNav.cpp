@@ -6,6 +6,7 @@
  */
 
 #include <SF_Nav/SFNav.h>
+#include <cmath>
 
 SF_Nav::SF_Nav() {
 	// TODO Auto-generated constructor stub
@@ -45,7 +46,7 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,float refresh_ti
 
 void SF_Nav::update()
 {
-	float dist, bearing;
+	double dist, bearing;
 
 	//Get inputs u_n and z_n
 	gps->update();
@@ -60,29 +61,7 @@ void SF_Nav::update()
 	state.vX = sind(bearing) * curr_vel.speed;
 	state.vY = cosd(bearing) * curr_vel.speed;
 
-	//
 
-	//Run through the Kalman filter equations
-	//State Prediction
-	x_pred = A * x + B * u_n;
-
-	//Covariance Prediction
-	P_pred = A * P * A.transpose() + Q;
-
-	//Innovation
-	y = z_n - H*x_pred;
-
-	//Innovation Covarience
-	S = H*P_pred*H.transpose() + R;
-
-	//Kalman Gain
-	K = P_pred*H.transpose() * S.inverse();
-
-	//State Update
-	x = x_pred + K*y;
-
-	//Covariance update
-	P = (Eigen::Matrix4f::Identity() - K*H)*P_pred;
 
 
 }
