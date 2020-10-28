@@ -24,12 +24,43 @@
 #include "usart.h"
 #include "gpio.h"
 #include "GPS/GPS.h"
+#include "IMU/IMU.h"
+#include "SF_Nav/SFNav.h"
+#include "uart_printf.h"
 
 GPS gps;
+I2C_HandleTypeDef hi2c1;
+SF_Nav kf;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
+
+void gps_task(void* arg)
+{
+	gps.init(&huart1);
+	while(1)
+	{
+		if(gps.update())
+		{
+			location loc = gps.getPosition();
+			uart_printf("Latitude %f\r\nLongitude %f\r\n", loc.latitude, loc.longitude);
+		}
+		vTaskDelay(1000);
+	}
+}
+
+// Calls updates on the Kalman Filter and initializes the GPS and IMU
+void UpdateKF(void* arg) {
+	kf.init(&huart1, &hi2c1, KALMAN_REFRESH_TIME);
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriod = pdMS_TO_TICKS(KALMAN_REFRESH_TIME);
+	xLastWakeTime = xTaskGetTickCount();
+	while(1) {
+		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+		kf.update();
+	}
+}
 
 /**
   * @brief  The application entry point.
@@ -47,9 +78,16 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
+
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+
+//  xTaskCreate(UpdateKF, "kalman", 512, NULL, 1, NULL);
+  xTaskCreate(gps_task, "GPS TASK", 512, NULL, 0, NULL);
+  vTaskStartScheduler();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */

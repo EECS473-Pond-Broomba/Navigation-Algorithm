@@ -17,7 +17,7 @@ SF_Nav::~SF_Nav() {
 	// TODO Auto-generated destructor stub
 }
 
-void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,float refresh_time)
+void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,int refresh_time)
 {
 	//Initialize IMU and GPS
 	imu->initializeIMU(ih);
