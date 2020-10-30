@@ -34,8 +34,13 @@ public:
 private:
 	IMU* imu;
 	GPS* gps;
-	Eigen::Matrix4f A, B, Q, H, R, P_pred, P, S, K;
-	Eigen::RowVector4f x_pred, x, u_n, y, z_n;
+//	Eigen::Matrix4f A, B, Q, H, R, P_pred, P, S, K;
+//	Eigen::RowVector4f x_pred, x, u_n, y, z_n;
+	// EKF
+	Eigen::Matrix<float, 6, 8> f;
+	Eigen::Matrix<float, 6, 6> F, P_pred, P, W, V, Q, R, h, H, S, K_n;
+	Eigen::Matrix<float, 6, 1> x_pred, x, y, z_n, w, v;
+	Eigen::Matrix<float, 2, 1> u_n;	// Action, contains x and y acceleration
 	float t;
 	location curr_location, prev_location;
 	velocity curr_vel, prev_vel;

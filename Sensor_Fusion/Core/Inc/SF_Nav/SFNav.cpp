@@ -26,21 +26,42 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,int refresh_time
 	//Initialize all matrices and set refresh time
 	t = refresh_time;
 
-	A << 1, 0, t, 0,
-		 0, 1, 0, t,
-		 0, 0, 1, 0,
-		 0, 0, 0, 1;
 
-	B << 0.5*t*t, 0      , 0, 0,
-		 0      , 0.5*t*t, 0, 0,
-		 t      , 0      , 0, 0,
-		 0      , t      , 0, 0;
+//	h << Eigen::Matrix4f::Identity();
 
-	P << Eigen::Matrix4f::Identity();
-	H << Eigen::Matrix4f::Identity();
-	//TODO: Get an estimate for Q and R
-	Q << Eigen::Matrix4f::Identity();
-	R << Eigen::Matrix4f::Identity();
+
+	// EKF
+	// f is a function of previous state and action
+	f << 1, 0, 0, t, 0, 0, 0.5*t*t, 0,
+		 0, 1, 0, 0, t, 0, 0, 		0.5*t*t,
+		 0, 0, 1, 0, 0, t, 0, 		0,
+		 0, 0, 0, 1, 0, 0, t, 		0,
+		 0, 0, 0, 0, 1, 0, 0, 		t,
+		 0, 0, 0, 0, 0, 1, 0, 		0;
+	// F is a jacobian of f*states vector w.r.t each state (acceleration not a state)
+	F << 1, 0, 0, t, 0, 0,
+		 0, 1, 0, 0, t, 0,
+		 0, 0, 1, 0, 0, t,
+		 0, 0, 0, 1, 0, 0,
+		 0, 0, 0, 0, 1, 0,
+		 0, 0, 0, 0, 0, 1;
+	P << Eigen::Matrix6f::Identity();
+	//TODO: Get an estimate for w, Q and v, R
+	w << 0.1,
+		 0.1,
+		 0.1,
+		 0.1,
+		 0.1,
+		 0.1;
+	W << Eigen::Matrix6f::Identity();	// Jacobian of w
+	Q << Eigen::Matrix6f::Identity();
+	v << 0.1,
+		 0.1,
+		 0.1,
+		 0.1,
+		 0.1,
+		 0.1;
+	R << Eigen::Matrix6f::Identity();
 
 }
 
