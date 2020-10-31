@@ -31,6 +31,7 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,int refresh_time
 
 
 	// EKF
+	I.setIdentity();	// 6x6 Identity
 	// f is a function of previous state and action
 	f << 1, 0, 0, t, 0, 0, 0.5*t*t, 0,
 		 0, 1, 0, 0, t, 0, 0, 		0.5*t*t,
@@ -45,7 +46,7 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,int refresh_time
 		 0, 0, 0, 1, 0, 0,
 		 0, 0, 0, 0, 1, 0,
 		 0, 0, 0, 0, 0, 1;
-	P << Eigen::Matrix6f::Identity();
+	P_n = I;
 	//TODO: Get an estimate for w, Q and v, R
 	w << 0.1,
 		 0.1,
@@ -53,15 +54,34 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,int refresh_time
 		 0.1,
 		 0.1,
 		 0.1;
-	W << Eigen::Matrix6f::Identity();	// Jacobian of w
-	Q << Eigen::Matrix6f::Identity();
+	// Jacobian of w w.r.t states
+	W << 0.1, 0, 0, 0, 0, 0,
+		 0, 0.1, 0, 0, 0, 0,
+		 0, 0, 0.1, 0, 0, 0,
+		 0, 0, 0, 0.1, 0, 0,
+		 0, 0, 0, 0, 0.1, 0,
+		 0, 0, 0, 0, 0, 0.1;
+//	Q << Eigen::Matrix6f::Identity();
+	Q = I;
 	v << 0.1,
 		 0.1,
 		 0.1,
 		 0.1,
 		 0.1,
 		 0.1;
-	R << Eigen::Matrix6f::Identity();
+	// Jacobian of w w.r.t states
+	V << 0.1, 0, 0, 0, 0, 0,
+		 0, 0.1, 0, 0, 0, 0,
+		 0, 0, 0.1, 0, 0, 0,
+		 0, 0, 0, 0.1, 0, 0,
+		 0, 0, 0, 0, 0.1, 0,
+		 0, 0, 0, 0, 0, 0.1;
+//	R << Eigen::Matrix6f::Identity();
+//	h << Eigen::Matrix6f::Identity();
+//	H << Eigen::Matrix6f::Identity();
+	R = I;
+	h = I;
+	H = I;
 
 }
 
@@ -79,10 +99,40 @@ void SF_Nav::update()
 	//Now convert the distance and bearing to and x and y
 	state.x = state.x + sind(bearing)* dist;
 	state.y = state.y + cosd(bearing)* dist;
+	state.b = bearing;
 	state.vX = sind(bearing) * curr_vel.speed;
 	state.vY = cosd(bearing) * curr_vel.speed;
+	state.vB = imu->getAngVel(IMU::Axes::z);
 
+	// Set u_n and z_n
+	u_n <<  imu->getLinearAcceleration(IMU::Axes::x),
+			imu->getLinearAcceleration(IMU::Axes::y);
+	z_n <<  state.x,
+			state.y,
+			state.b,
+			state.vX,
+			state.vY,
+			state.vB;
 
+	// Step 1: Predicted mean
+	muu << x_pred, u_n;	// Concatenate state at n-1 and actions
+	x_pred = f*muu;		// Get next predicted state
 
+	// Step 2: Predicted covariance
+	P_pred = F*P_pred*F.transpose()+W*Q*W.transpose();
 
+	// Step 3: Innovation
+	y = z_n-x_pred;
+
+	// Step 4: Innovation covariance
+	S = H*P_pred*H.transpose()+V*R*V.transpose();
+
+	// Step 5: Filter gain
+	K_n = P_pred*H.transpose()*S.inverse();
+
+	// Step 6: Corrected mean
+	x_n = x_pred+K_n*y;
+
+	// Step 7: Corrected covariance
+	P_n = (I-K_n*H)*P_pred;
 }
