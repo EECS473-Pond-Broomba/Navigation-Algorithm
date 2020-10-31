@@ -27,7 +27,9 @@
 extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim11;
 
-extern GPS gps;
+extern xSemaphoreHandle gps_sem;
+
+
 
 /******************************************************************************/
 /*           Cortex-M4 Processor Interruption and Exception Handlers          */
@@ -144,15 +146,18 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void)
   */
 void USART1_IRQHandler(void)
 {
+
+	static BaseType_t xHigherPrioTaskWoken;
+
+	xHigherPrioTaskWoken = pdFALSE;
   /* USER CODE BEGIN USART1_IRQn 0 */
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
-  if(!gps.has_data)
-  {
-	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, 200);
-	  gps.has_data = true;
-  }
+  xSemaphoreGiveFromISR(gps_sem, &xHigherPrioTaskWoken);
+
+  //If the current task is lower than our update task then yield.
+  portYIELD_FROM_ISR(xHigherPrioTaskWoken);
 
 }
 

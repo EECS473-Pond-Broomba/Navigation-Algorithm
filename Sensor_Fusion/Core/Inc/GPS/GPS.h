@@ -9,6 +9,8 @@
 #define INC_GPS_H_
 
 #include "usart.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 #include "GPS/lwgps.h"
 
 struct location{
@@ -27,7 +29,7 @@ public:
 	GPS();
 	virtual ~GPS();
 
-	void init(UART_HandleTypeDef* handle);
+	void init(UART_HandleTypeDef* handle, xSemaphoreHandle gps_sem_handle);
 
 	bool update();
 
@@ -40,8 +42,7 @@ public:
 		return curr_velocity;
 	}
 
-	char data[200];
-	bool has_data;
+	char data[54];
 
 private:
 	UART_HandleTypeDef* huart;
@@ -49,6 +50,8 @@ private:
 
 	location curr_position;
 	velocity curr_velocity;
+
+	xSemaphoreHandle semHandle;
 
 };
 
