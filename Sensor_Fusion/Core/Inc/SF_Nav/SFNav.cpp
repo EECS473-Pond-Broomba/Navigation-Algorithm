@@ -20,8 +20,8 @@ SF_Nav::~SF_Nav() {
 void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih,int refresh_time)
 {
 	//Initialize IMU and GPS
-	imu->initializeIMU(ih);
-	gps->init(uh);
+	imu.initializeIMU(ih);
+	gps.init(uh);
 
 	//Initialize all matrices and set refresh time
 	t = refresh_time;
@@ -90,9 +90,9 @@ void SF_Nav::update()
 	double dist, bearing;
 
 	//Get inputs u_n and z_n
-	gps->update();
-	curr_location = gps->getPosition();
-	curr_vel = gps->getVelocity();
+	if(gps.update()) {
+		curr_location = gps.getPosition();
+		curr_vel = gps.getVelocity();
 
 	lwgps_distance_bearing(prev_location.latitude, prev_location.longitude, curr_location.latitude, curr_location.longitude, &dist, &bearing);
 
@@ -102,11 +102,11 @@ void SF_Nav::update()
 	state.b = bearing;
 	state.vX = sind(bearing) * curr_vel.speed;
 	state.vY = cosd(bearing) * curr_vel.speed;
-	state.vB = imu->getAngVel(IMU::Axes::z);
+	state.vB = imu.getAngVel(IMU::Axes::z);
 
 	// Set u_n and z_n
-	u_n <<  imu->getLinearAcceleration(IMU::Axes::x),
-			imu->getLinearAcceleration(IMU::Axes::y);
+	u_n <<  imu.getLinearAcceleration(IMU::Axes::x),
+			imu.getLinearAcceleration(IMU::Axes::y);
 	z_n <<  state.x,
 			state.y,
 			state.b,
@@ -135,4 +135,5 @@ void SF_Nav::update()
 
 	// Step 7: Corrected covariance
 	P_n = (I-K_n*H)*P_pred;
+	}
 }

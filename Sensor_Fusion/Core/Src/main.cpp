@@ -85,7 +85,7 @@ int main(void)
 
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
-  xTaskCreate(UpdateKF, "kalman", 512, NULL, 1, NULL);
+  xTaskCreate(UpdateKF, "kalman", 2048, NULL, 0, NULL);
 //  xTaskCreate(gps_task, "GPS TASK", 512, NULL, 0, NULL);
   vTaskStartScheduler();
 

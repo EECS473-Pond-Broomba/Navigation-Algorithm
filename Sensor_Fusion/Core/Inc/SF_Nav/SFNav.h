@@ -34,8 +34,8 @@ public:
 	state_var get_state();
 
 private:
-	IMU* imu;
-	GPS* gps;
+	IMU imu;
+	GPS gps;
 //	Eigen::Matrix4f A, B, Q, H, R, P_pred, P, S, K;
 //	Eigen::RowVector4f x_pred, x, u_n, y, z_n;
 	// EKF
