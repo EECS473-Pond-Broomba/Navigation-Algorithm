@@ -147,17 +147,14 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
 
-	static BaseType_t xHigherPrioTaskWoken;
-
-	xHigherPrioTaskWoken = pdFALSE;
   /* USER CODE BEGIN USART1_IRQn 0 */
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
-  xSemaphoreGiveFromISR(gps_sem, &xHigherPrioTaskWoken);
+  xSemaphoreGiveFromISR(gps_sem, NULL);
 
   //If the current task is lower than our update task then yield.
-  portYIELD_FROM_ISR(xHigherPrioTaskWoken);
+  //portYIELD_FROM_ISR(xHigherPrioTaskWoken);
 
 }
 

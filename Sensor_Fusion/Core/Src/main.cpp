@@ -40,6 +40,7 @@ xSemaphoreHandle gps_sem;
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 
+
 void blink(void*)
 {
 	while(1)
@@ -51,6 +52,7 @@ void blink(void*)
 
 void gps_task(void* arg)
 {
+	gps_sem = xSemaphoreCreateBinary();
 	gps.init(&huart1, gps_sem);
 	while(1)
 	{
@@ -102,7 +104,7 @@ int main(void)
   xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
 
   //xTaskCreate(UpdateKF, "kalman", 2048, NULL, 2, NULL);
-  xTaskCreate(gps_task, "GPS TASK", 512, NULL, 0, NULL);
+  xTaskCreate(gps_task, "GPS TASK", 2048, NULL, 0, NULL);
   vTaskStartScheduler();
 
   /* We should never get here as control is now taken by the scheduler */
