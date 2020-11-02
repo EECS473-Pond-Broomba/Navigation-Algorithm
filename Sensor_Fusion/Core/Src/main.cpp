@@ -103,8 +103,8 @@ int main(void)
 
   xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
 
-  //xTaskCreate(UpdateKF, "kalman", 2048, NULL, 2, NULL);
-  xTaskCreate(gps_task, "GPS TASK", 2048, NULL, 0, NULL);
+  xTaskCreate(UpdateKF, "kalman", 2048, NULL, 2, NULL);
+//  xTaskCreate(gps_task, "GPS TASK", 2048, NULL, 0, NULL);
   vTaskStartScheduler();
 
   /* We should never get here as control is now taken by the scheduler */
