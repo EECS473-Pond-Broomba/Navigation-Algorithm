@@ -9,9 +9,13 @@
 #define INC_GPS_H_
 
 #include "usart.h"
+#include "GPS/lwgps.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include "GPS/lwgps.h"
+
+extern SemaphoreHandle_t gps_sem;
+
+#define GPS_MSG_SIZE 144
 
 struct location{
 	double latitude;
@@ -29,7 +33,7 @@ public:
 	GPS();
 	virtual ~GPS();
 
-	void init(UART_HandleTypeDef* handle, xSemaphoreHandle gps_sem_handle);
+	void init(UART_HandleTypeDef* handle);
 
 	bool update();
 
@@ -42,7 +46,8 @@ public:
 		return curr_velocity;
 	}
 
-	char data[54];
+	char data[GPS_MSG_SIZE];
+	bool has_data;
 
 private:
 	UART_HandleTypeDef* huart;
@@ -50,8 +55,6 @@ private:
 
 	location curr_position;
 	velocity curr_velocity;
-
-	xSemaphoreHandle semHandle;
 
 };
 

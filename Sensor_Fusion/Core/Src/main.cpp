@@ -53,7 +53,8 @@ void blink(void*)
 void gps_task(void* arg)
 {
 	gps_sem = xSemaphoreCreateBinary();
-	gps.init(&huart1, gps_sem);
+	gps.init(&huart1);
+	vTaskDelay(1000);
 	while(1)
 	{
 		if(gps.update())
@@ -61,6 +62,7 @@ void gps_task(void* arg)
 			location loc = gps.getPosition();
 			uart_printf("Latitude %f\r\nLongitude %f\r\n", loc.latitude, loc.longitude);
 		}
+		vTaskDelay(1000);
 	}
 }
 
@@ -68,7 +70,7 @@ void gps_task(void* arg)
 void UpdateKF(void* arg) {
 	gps_sem = xSemaphoreCreateBinary();
 
-	kf.init(&huart1, &hi2c1, gps_sem, KALMAN_REFRESH_TIME);
+	kf.init(&huart1, &hi2c1, KALMAN_REFRESH_TIME);
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(KALMAN_REFRESH_TIME);
 	xLastWakeTime = xTaskGetTickCount();
@@ -98,8 +100,6 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
-
-  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 
   xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
 
