@@ -27,6 +27,7 @@
 #include "GPS/GPS.h"
 
 GPS gps;
+SemaphoreHandle_t gps_sem;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -76,6 +77,7 @@ void blink(void*)
 
 void gps_task(void*)
 {
+	gps_sem = xSemaphoreCreateBinary();
 	gps.init(&huart1);
 
 	while(1)

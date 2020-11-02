@@ -27,6 +27,7 @@ extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim11;
 
 extern GPS gps;
+extern SemaphoreHandle_t gps_sem;
 
 /******************************************************************************/
 /*           Cortex-M4 Processor Interruption and Exception Handlers          */
@@ -147,11 +148,13 @@ void USART1_IRQHandler(void)
 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
-  if(!gps.has_data)
-  {
-	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
-	  gps.has_data = true;
-  }
+//  if(!gps.has_data)
+//  {
+//	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
+//	  gps.has_data = true;
+//  }
+  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
+  xSemaphoreGiveFromISR(gps_sem, NULL);
 
 }
 
