@@ -51,10 +51,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
 
-  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-
   xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
-  xTaskCreate(gps_task, "GPS task", 512, NULL, 0, NULL);
+  xTaskCreate(gps_task, "GPS task", 2048, NULL, 0, NULL);
 
   vTaskStartScheduler();
   /* We should never get here as control is now taken by the scheduler */

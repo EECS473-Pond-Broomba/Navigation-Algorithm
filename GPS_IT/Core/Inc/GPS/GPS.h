@@ -11,6 +11,8 @@
 #include "usart.h"
 #include "GPS/lwgps.h"
 
+#define GPS_MSG_SIZE 144
+
 struct location{
 	double latitude;
 	double longitude;
@@ -40,7 +42,7 @@ public:
 		return curr_velocity;
 	}
 
-	char data[200];
+	char data[GPS_MSG_SIZE];
 	bool has_data;
 
 private:

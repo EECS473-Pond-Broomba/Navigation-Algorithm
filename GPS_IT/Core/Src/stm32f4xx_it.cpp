@@ -149,7 +149,7 @@ void USART1_IRQHandler(void)
   HAL_UART_IRQHandler(&huart1);
   if(!gps.has_data)
   {
-	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, 200);
+	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
 	  gps.has_data = true;
   }
 
