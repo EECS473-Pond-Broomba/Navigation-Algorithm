@@ -84,9 +84,6 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, int refresh_tim
 
 	imu.initializeIMU(ih);
 	gps.init(uh);
-	while(!gps.update()) {
-		start_location = gps.getPosition();
-	}
 }
 
 void SF_Nav::update()
@@ -101,22 +98,22 @@ void SF_Nav::update()
 		lwgps_distance_bearing(prev_location.latitude, prev_location.longitude, curr_location.latitude, curr_location.longitude, &dist, &bearing);
 
 		//Now convert the distance and bearing to and x and y
-		state.x = state.x + sind(bearing)* dist;
-		state.y = state.y + cosd(bearing)* dist;
-		state.b = bearing;
-		state.vX = sind(bearing) * curr_vel.speed;
-		state.vY = cosd(bearing) * curr_vel.speed;
-		state.vB = imu.getAngVel(IMU::Axes::z);
+//		state.x = state.x + sind(bearing)* dist;
+//		state.y = state.y + cosd(bearing)* dist;
+//		state.b = bearing;
+//		state.vX = sind(bearing) * curr_vel.speed;
+//		state.vY = cosd(bearing) * curr_vel.speed;
+//		state.vB = imu.getAngVel(IMU::Axes::z);
 
-		// Set u_n and z_n
-		u_n <<  imu.getLinearAcceleration(IMU::Axes::x),
-				imu.getLinearAcceleration(IMU::Axes::y);
-		z_n <<  state.x,
-				state.y,
-				state.b,
-				state.vX,
-				state.vY,
-				state.vB;
+		// Set u_n and z_n, turn IMU frame into world frame
+		u_n <<  imu.getLinearAcceleration(IMU::Axes::x)*cosd(bearing)+imu.getLinearAcceleration(IMU::Axes::y)*sind(bearing),
+				imu.getLinearAcceleration(IMU::Axes::x)*sind(bearing)+imu.getLinearAcceleration(IMU::Axes::y)*cosd(bearing);
+		z_n <<  state.x + sind(bearing)* dist,
+				state.y + cosd(bearing)* dist,
+				bearing,
+				sind(bearing) * curr_vel.speed,
+				cosd(bearing) * curr_vel.speed,
+				imu.getAngVel(IMU::Axes::z);
 
 		// Step 1: Predicted mean
 		muu << x_n, u_n;	// Concatenate state at n-1 and actions

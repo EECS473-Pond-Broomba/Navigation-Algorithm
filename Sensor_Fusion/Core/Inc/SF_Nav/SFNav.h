@@ -45,7 +45,7 @@ private:
 	Eigen::Matrix<float, 8, 1> muu;	// Concatenated mu and u for step 1
 	Eigen::Matrix<float, 2, 1> u_n;	// Action, contains x and y acceleration
 	float t;
-	location curr_location, prev_location, start_location;
+	location curr_location, prev_location;
 	velocity curr_vel, prev_vel;
 	state_var state;
 
