@@ -8,6 +8,8 @@
 #include <GPS/GPS.h>
 #include "stdio.h"
 #include "string.h"
+#include "FreeRTOS.h"
+
 GPS::GPS() {
 	// TODO Auto-generated constructor stub
 	has_data = false;
@@ -82,6 +84,10 @@ bool GPS::update()
 
 		return false;
 	}
-	HAL_UART_Receive_IT(huart, (uint8_t*)data, GPS_MSG_SIZE);
-	return false;
+	else
+	{
+		HAL_UART_Receive_IT(huart, (uint8_t*)data, GPS_MSG_SIZE);
+		return false;
+	}
+
 }
