@@ -88,9 +88,9 @@ void gps_task(void*)
 		}
 		else
 		{
+			vTaskDelay(pdMS_TO_TICKS(500));
 			uart_printf("NO SIGNAL!!!\r\n");
 		}
-		vTaskDelay(1000);
 	}
 }
 
