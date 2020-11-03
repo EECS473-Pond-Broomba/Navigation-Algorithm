@@ -46,6 +46,7 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, int refresh_tim
 		 0, 0, 0, 0, 1, 0,
 		 0, 0, 0, 0, 0, 1;
 	P_n = I;
+	P_pred = I;
 	//TODO: Get an estimate for w, Q and v, R
 	w << 0.1,
 		 0.1,
@@ -82,6 +83,13 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, int refresh_tim
 	h = I;
 	H = I;
 
+	x_n <<  0,
+			0,
+			imu.getOrientation(IMU::Axes::z),
+			0,
+			0,
+			0;
+
 	imu.initializeIMU(ih);
 	gps.init(uh);
 }
@@ -94,7 +102,7 @@ void SF_Nav::update()
 	if(gps.update()) {
 		curr_location = gps.getPosition();
 		curr_vel = gps.getVelocity();
-
+		imu.calculateLinearVelocity();
 		lwgps_distance_bearing(prev_location.latitude, prev_location.longitude, curr_location.latitude, curr_location.longitude, &dist, &bearing);
 
 		//Now convert the distance and bearing to and x and y

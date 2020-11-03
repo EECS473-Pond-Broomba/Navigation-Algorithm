@@ -28,6 +28,7 @@
 #include "SF_Nav/SFNav.h"
 #include "uart_printf.h"
 #include "semphr.h"
+#include "FreeRTOS.h"
 
 GPS gps;
 I2C_HandleTypeDef hi2c1;
@@ -69,7 +70,7 @@ void gps_task(void* arg)
 // Calls updates on the Kalman Filter and initializes the GPS and IMU
 void UpdateKF(void* arg) {
 	gps_sem = xSemaphoreCreateBinary();
-
+	xSemaphoreGive(gps_sem);
 	kf.init(&huart1, &hi2c1, KALMAN_REFRESH_TIME);
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(KALMAN_REFRESH_TIME);

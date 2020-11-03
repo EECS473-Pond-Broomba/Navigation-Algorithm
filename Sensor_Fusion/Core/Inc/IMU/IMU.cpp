@@ -155,10 +155,7 @@ void IMU::storeLinearAcceleration() {
 }
 
 void IMU::calculateLinearVelocity() {
-	// If no acceleration time steps taken, return to avoid divide by zero
-	if(accelTimeSteps == 0) {
-		return;
-	}
+	storeLinearAcceleration();
 	velocity[0] += (accelerationSamples[0][0] + accelerationSamples[0][1]) / 2.0 * (ACCELERATION_TIME_STEP / 1000.0);
 	velocity[1] += (accelerationSamples[1][0] + accelerationSamples[1][1]) / 2.0 * (ACCELERATION_TIME_STEP / 1000.0);
 	velocity[2] += (accelerationSamples[2][0] + accelerationSamples[2][1]) / 2.0 * (ACCELERATION_TIME_STEP / 1000.0);
