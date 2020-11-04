@@ -30,7 +30,7 @@
 #include "semphr.h"
 #include "FreeRTOS.h"
 
-GPS gps;
+//GPS gps;
 I2C_HandleTypeDef hi2c1;
 SF_Nav kf;
 
@@ -51,33 +51,41 @@ void blink(void*)
 	}
 }
 
-void gps_task(void* arg)
-{
-	gps_sem = xSemaphoreCreateBinary();
-	gps.init(&huart1);
-	vTaskDelay(1000);
-	while(1)
-	{
-		if(gps.update())
-		{
-			location loc = gps.getPosition();
-			uart_printf("Latitude %f\r\nLongitude %f\r\n", loc.latitude, loc.longitude);
-		}
-		vTaskDelay(1000);
-	}
-}
+//void gps_task(void* arg)
+//{
+//	gps_sem = xSemaphoreCreateBinary();
+//	gps.init(&huart1);
+//	vTaskDelay(1000);
+//	while(1)
+//	{
+//		if(gps.update())
+//		{
+//			location loc = gps.getPosition();
+//			uart_printf("Latitude %f\r\nLongitude %f\r\n", loc.latitude, loc.longitude);
+//		}
+//		vTaskDelay(1000);
+//	}
+//}
 
 // Calls updates on the Kalman Filter and initializes the GPS and IMU
 void UpdateKF(void* arg) {
 	gps_sem = xSemaphoreCreateBinary();
-	xSemaphoreGive(gps_sem);
+//	kf.gps.init(&huart1);
+//	gps.init(&huart1);
 	kf.init(&huart1, &hi2c1, KALMAN_REFRESH_TIME);
 	TickType_t xLastWakeTime;
-	const TickType_t xPeriod = pdMS_TO_TICKS(KALMAN_REFRESH_TIME);
+	const TickType_t xPeriod = pdMS_TO_TICKS(KALMAN_REFRESH_TIME * 1000);
 	xLastWakeTime = xTaskGetTickCount();
+	vTaskDelay(1000);
 	while(1) {
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
+//		if(kf.gps.update()) {
+//			location loc = kf.gps.getPosition();
+//			uart_printf("Latitude %f\r\nLongitude %f\r\n", loc.latitude, loc.longitude);
+//		}
 		kf.update();
+//		uart_printf("some\r\n");
+//		vTaskDelay(1000);
 	}
 }
 
@@ -104,8 +112,8 @@ int main(void)
 
   xTaskCreate(blink, "Blink", configMINIMAL_STACK_SIZE, NULL, 0, NULL);
 
-//  xTaskCreate(UpdateKF, "kalman", 2048, NULL, 2, NULL);
-  xTaskCreate(gps_task, "GPS TASK", 2048, NULL, 0, NULL);
+  xTaskCreate(UpdateKF, "kalman", 2048, NULL, 0, NULL);
+//  xTaskCreate(gps_task, "GPS TASK", 2048, NULL, 0, NULL);
   vTaskStartScheduler();
 
   /* We should never get here as control is now taken by the scheduler */

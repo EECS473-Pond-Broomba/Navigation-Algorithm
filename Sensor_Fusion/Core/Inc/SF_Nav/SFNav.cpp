@@ -10,18 +10,18 @@
 
 SF_Nav::SF_Nav() {
 	// TODO Auto-generated constructor stub
-
+	gps.has_data = false;
 }
 
 SF_Nav::~SF_Nav() {
 	// TODO Auto-generated destructor stub
 }
 
-void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, int refresh_time)
+void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, float refresh_time)
 {
 	//Initialize IMU and GPS
-
-
+	gps.init(uh);
+	imu.initializeIMU(ih);
 	//Initialize all matrices and set refresh time
 	t = refresh_time;
 
@@ -89,18 +89,22 @@ void SF_Nav::init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, int refresh_tim
 			0,
 			0,
 			0;
-
-	imu.initializeIMU(ih);
-	gps.init(uh);
+	prev_location.latitude = 0.0;
+	prev_location.longitude = 0.0;
 }
 
 void SF_Nav::update()
 {
 	double dist, bearing;
-
+//	vTaskDelay(500);
 	//Get inputs u_n and z_n
 	if(gps.update()) {
+		prev_location = curr_location;
 		curr_location = gps.getPosition();
+		// If prev_location is not set yet, set it to curr_location so our dist wont be 2000 miles
+		if(prev_location.latitude < 0.1 && prev_location.latitude > -0.1) {
+			prev_location = curr_location;
+		}
 		curr_vel = gps.getVelocity();
 		imu.calculateLinearVelocity();
 		lwgps_distance_bearing(prev_location.latitude, prev_location.longitude, curr_location.latitude, curr_location.longitude, &dist, &bearing);
@@ -116,8 +120,8 @@ void SF_Nav::update()
 		// Set u_n and z_n, turn IMU frame into world frame
 		u_n <<  imu.getLinearAcceleration(IMU::Axes::x)*cosd(bearing)+imu.getLinearAcceleration(IMU::Axes::y)*sind(bearing),
 				imu.getLinearAcceleration(IMU::Axes::x)*sind(bearing)+imu.getLinearAcceleration(IMU::Axes::y)*cosd(bearing);
-		z_n <<  state.x + sind(bearing)* dist,
-				state.y + cosd(bearing)* dist,
+		z_n <<  x_n(0) + sind(bearing)* dist,
+				x_n(1) + cosd(bearing)* dist,
 				bearing,
 				sind(bearing) * curr_vel.speed,
 				cosd(bearing) * curr_vel.speed,

@@ -28,14 +28,14 @@ public:
 	SF_Nav();
 	virtual ~SF_Nav();
 
-	void init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, int refresh_time);
+	void init(UART_HandleTypeDef* uh, I2C_HandleTypeDef* ih, float refresh_time);
 
 	void update();
 	state_var get_state();
+	GPS gps;
 
 private:
 	IMU imu;
-	GPS gps;
 //	Eigen::Matrix4f A, B, Q, H, R, P_pred, P, S, K;
 //	Eigen::RowVector4f x_pred, x, u_n, y, z_n;
 	// EKF

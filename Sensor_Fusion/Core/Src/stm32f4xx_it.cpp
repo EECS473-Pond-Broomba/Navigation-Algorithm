@@ -22,12 +22,13 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "GPS/GPS.h"
+#include "SF_Nav/SFNav.h"
 
 extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim11;
 
-extern GPS gps;
-extern SemaphoreHandle_t gps_sem;
+//extern GPS gps;
+extern SF_Nav kf;
 
 /******************************************************************************/
 /*           Cortex-M4 Processor Interruption and Exception Handlers          */
@@ -145,28 +146,14 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-  static unsigned int count = 0;
+
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
-//  if(!gps.has_data)
-//  {
-//	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
-//	  gps.has_data = true;
-//  }
-//  if(count)
-//  {
-//	  count = 0;
-//	  xSemaphoreGiveFromISR(gps_sem, NULL);
-//
-//  }
-//  else
-//  {
-//	  count++;
-//	  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
-//
-//  }
-  HAL_UART_Receive_IT(&huart1, (uint8_t*)gps.data, GPS_MSG_SIZE);
-  xSemaphoreGiveFromISR(gps_sem, NULL);
+  if(!kf.gps.has_data)
+  {
+	  HAL_UART_Receive_IT(&huart1, (uint8_t*)kf.gps.data, GPS_MSG_SIZE);
+	  kf.gps.has_data = true;
+  }
 
 }
 

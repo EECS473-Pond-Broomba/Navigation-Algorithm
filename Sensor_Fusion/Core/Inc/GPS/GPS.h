@@ -10,12 +10,8 @@
 
 #include "usart.h"
 #include "GPS/lwgps.h"
-#include "FreeRTOS.h"
-#include "semphr.h"
 
-extern SemaphoreHandle_t gps_sem;
-
-#define GPS_MSG_SIZE 144
+#define GPS_MSG_SIZE 150
 
 struct location{
 	double latitude;
