@@ -43,7 +43,7 @@ bool GPS::update()
 			curr_position.latitude = lwgps_handle.latitude;
 			curr_position.longitude = lwgps_handle.longitude;
 
-			curr_velocity.speed = lwgps_handle.speed;
+			curr_velocity.speed = lwgps_to_speed(lwgps_handle.speed, lwgps_speed_mps);
 			curr_velocity.bearing = lwgps_handle.course;
 
 			//HAL_UART_Receive_IT(huart, (uint8_t*)data, GPS_MSG_SIZE);
