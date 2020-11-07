@@ -150,3 +150,13 @@ void SF_Nav::update()
 		P_n = (I-K_n*H)*P_pred;
 	}
 }
+
+void SF_Nav::get_state() {
+	state_var current_state = { .x = x_n(0),
+								.y = x_n(1),
+								.b = x_n(2),
+								.vX = x_n(3),
+								.vY = x_n(4),
+								.vB = x_n(5)};
+	return current_state;
+}
