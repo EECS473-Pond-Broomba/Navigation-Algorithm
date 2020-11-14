@@ -149,6 +149,11 @@ void SF_Nav::update()
 		// Step 7: Corrected covariance
 		P_n = (I-K_n*H)*P_pred;
 	}
+	else
+	{
+		//If we dont have data then suspend task for 100ms and check again
+		vTaskDelay(100);
+	}
 }
 
 state_var SF_Nav::get_state() {
