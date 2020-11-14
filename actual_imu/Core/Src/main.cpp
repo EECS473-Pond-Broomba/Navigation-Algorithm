@@ -47,7 +47,7 @@ void CollectData(void* arg) {
 	xLastWakeTime = xTaskGetTickCount();
 	while(1) {
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
-		double zOrientation = imu.getOrientation(imu.Axes::z);
+  		double zOrientation = imu.getOrientation(imu.Axes::z);
 			// Collect linear acceleration samples with other data, could be sampled at
 			// different period in another task with the ACCELERATION_TIME_STEP macro
 			imu.storeLinearAcceleration();

@@ -108,7 +108,7 @@ void SF_Nav::update()
 		curr_vel = gps.getVelocity();
 		imu.calculateLinearVelocity();
 		lwgps_distance_bearing(prev_location.latitude, prev_location.longitude, curr_location.latitude, curr_location.longitude, &dist, &bearing);
-
+		bearing = imu.getOrientation(IMU::Axes::z);
 		//Now convert the distance and bearing to and x and y
 //		state.x = state.x + sind(bearing)* dist;
 //		state.y = state.y + cosd(bearing)* dist;
@@ -151,7 +151,7 @@ void SF_Nav::update()
 	}
 }
 
-void SF_Nav::get_state() {
+state_var SF_Nav::get_state() {
 	state_var current_state = { .x = x_n(0),
 								.y = x_n(1),
 								.b = x_n(2),

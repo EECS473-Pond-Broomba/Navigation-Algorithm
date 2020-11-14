@@ -46,13 +46,17 @@ int8_t I2C::read8(uint8_t reg) {
 int16_t I2C::read16(uint8_t reg) {
 	HAL_StatusTypeDef ret;
 	uint8_t buffer[2];
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 	// Tell sensor that we want to read from reg
 	ret = HAL_I2C_Master_Transmit(hi2c, addr << 1, &reg, 1, I2C_TIMEOUT);
+//	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 	if(ret != HAL_OK) {
 		return 0xFFFF;
 	}
+//	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 	// Read 1 byte from reg
 	ret = HAL_I2C_Master_Receive(hi2c, addr << 1, buffer, 2, I2C_TIMEOUT);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 	if(ret != HAL_OK) {
 		return 0xFFFF;
 	}
